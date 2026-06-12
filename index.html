@@ -1,0 +1,319 @@
+```react
+import React, { useState, useMemo } from 'react';
+import { Settings, CheckCircle2, ArrowRight, ArrowLeft, Wrench, FileText, Send, Plane, AlertTriangle, Info } from 'lucide-react';
+
+export default function App() {
+  const [screen, setScreen] = useState('home'); // 'home' ou 'checklist'
+  const [model, setModel] = useState(null);
+  const [cycle, setCycle] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [checkedItems, setCheckedItems] = useState({});
+
+  // Definição dos passos
+  const steps = ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'];
+
+  // Função para gerar o checklist dinâmico baseado no modelo e ciclo
+  const generateChecklist = () => {
+    if (!model || !cycle) return [];
+
+    const isA321 = model === 'A321';
+    const isDescarteVedacoes = cycle === 2 || cycle === 4;
+    const isOverhaul = cycle === 4;
+
+    return [
+      // PASSO 0: PREPARAÇÃO
+      [
+        { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
+        { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
+      ],
+      // PASSO 1: DESMONTAGEM
+      [
+        { 
+          id: 'desm_1', 
+          text: isA321 
+            ? 'Atenção A321: Pegar SOMENTE o Piston House para desmontar.' 
+            : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House na horizontal.',
+          highlight: isA321 ? 'info' : null
+        },
+        { 
+          id: 'desm_2', 
+          text: 'Ferramenta: Usar Soquete 5/16" com extensor e catraca para fixação principal. (Segurar parafuso por baixo).' 
+        },
+        { 
+          id: 'desm_3', 
+          text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' 
+        },
+        { 
+          id: 'desm_4', 
+          text: 'Ferramenta: Usar Soquete 1/4" para soltar os parafusos do tubinho do pistão.' 
+        },
+        ...(isA321 ? [
+          { id: 'desm_5', text: 'Peça 160 (Bushing/Bucha): SALVAR. Vai para limpeza junto com o Piston.', highlight: 'info' },
+          { id: 'desm_6', text: 'Peças 170 e 180 (inclui tubinho): DESCARTAR no lixo.', highlight: 'alert' }
+        ] : []),
+        ...(isOverhaul ? [
+          { id: 'desm_7', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' }
+        ] : []),
+        { 
+          id: 'desm_vedacoes', 
+          text: isDescarteVedacoes 
+            ? 'VEDAÇÕES: Cortar e DESCARTAR (Lixo). Não guardar neste ciclo.' 
+            : 'VEDAÇÕES: SALVAR. Colocar no saquinho com fita verde (Tally Sheet + S/N) e guardar na pasta.',
+          highlight: isDescarteVedacoes ? 'alert' : 'info'
+        }
+      ],
+      // PASSO 2: DOCUMENTAÇÃO
+      [
+        { id: 'doc_1', text: 'Repair Request: Colar fita verde (BARCODE + S/N) no plástico protetor.' },
+        { id: 'doc_2', text: 'Repair Request: Anotar "Identification plate: in".' },
+        { id: 'doc_3', text: `Component Restoration Form: Preencher NUMBER of cycles (${cycle}).` },
+        { id: 'doc_4', text: 'Component Restoration Form: Em Remarks escrever "This component was disassembled IAW page 3001 to 3012".' },
+        { id: 'doc_5', text: 'Assinatura: Carimbar (LATAM-6022470 Wellington), datar e rubricar abaixo da data.' }
+      ],
+      // PASSO 3: DESPACHO E FINALIZAÇÃO
+      [
+        { 
+          id: 'fin_1', 
+          text: isA321 
+            ? 'FÍSICO: Enviar Piston House + Item 160 (Bushing) + Repair Request para a Limpeza Técnica 2.' 
+            : 'FÍSICO: Enviar Torque Tube + Piston House + Repair Request para a Limpeza Técnica 2.' 
+        },
+        { 
+          id: 'fin_2', 
+          text: isA321 
+            ? 'LOGÍSTICA DA PASTA: Guardar pasta no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' 
+            : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO.',
+          highlight: isA321 ? 'alert' : 'info'
+        },
+        { id: 'fin_3', text: 'SISTEMA: Atualizar Planilha de Movimentação para "Limpeza Técnica 2".' },
+        { id: 'fin_4', text: 'SISTEMA: Finalizar a Ordem de Serviço no Mysys.' },
+        { id: 'fin_5', text: 'DESPACHO: Colher a ASSINATURA do responsável pelo despacho do freio.', highlight: 'alert' }
+      ]
+    ];
+  };
+
+  const checklist = useMemo(generateChecklist, [model, cycle]);
+
+  const handleStart = () => {
+    if (model && cycle) {
+      setScreen('checklist');
+      setCurrentStep(0);
+      setCheckedItems({});
+    }
+  };
+
+  const toggleCheck = (id) => {
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const allCurrentChecked = () => {
+    if (!checklist[currentStep]) return false;
+    return checklist[currentStep].every(item => checkedItems[item.id]);
+  };
+
+  const getStepIcon = (index) => {
+    switch(index) {
+      case 0: return <Settings className="w-5 h-5" />;
+      case 1: return <Wrench className="w-5 h-5" />;
+      case 2: return <FileText className="w-5 h-5" />;
+      case 3: return <Send className="w-5 h-5" />;
+      default: return <CheckCircle2 className="w-5 h-5" />;
+    }
+  };
+
+  if (screen === 'home') {
+    return (
+      <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col items-center">
+        <div className="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col">
+          <div className="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
+            <Plane className="w-14 h-14 mx-auto mb-3 opacity-90" />
+            <h1 className="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
+            <p className="text-red-100 mt-1 font-medium">Guia Operacional de Freios</p>
+          </div>
+
+          <div className="flex-1 p-6 flex flex-col justify-center space-y-8">
+            {/* Seleção de Modelo */}
+            <div>
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
+              <div className="grid grid-cols-3 gap-3">
+                {['A320', 'A320 NEO', 'A321'].map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setModel(m)}
+                    className={`py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-200 ${
+                      model === m 
+                        ? 'bg-blue-900 text-white shadow-[0_8px_16px_rgba(30,58,138,0.3)] scale-105' 
+                        : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Seleção de Ciclo */}
+            <div>
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
+              <div className="grid grid-cols-4 gap-3">
+                {[1, 2, 3, 4].map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setCycle(c)}
+                    className={`py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
+                      cycle === c 
+                        ? 'bg-red-600 text-white shadow-[0_8px_16px_rgba(220,38,38,0.3)] scale-105' 
+                        : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span className="text-lg">{c}º</span>
+                    {c === 4 && <span className="text-[9px] uppercase tracking-wider opacity-90">Overhaul</span>}
+                    {c !== 4 && <span className="text-[9px] uppercase tracking-wider opacity-70">Reparo</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleStart}
+              disabled={!model || !cycle}
+              className={`w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300 ${
+                model && cycle 
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95' 
+                  : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+              }`}
+            >
+              Iniciar Bancada <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // TELA DE CHECKLIST
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Header Fixo */}
+      <div className="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
+        <div className="flex items-center justify-between mb-6 max-w-md mx-auto">
+          <button 
+            onClick={() => setScreen('home')}
+            className="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition active:scale-90"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="text-center">
+            <h1 className="font-black text-xl tracking-wide">{model}</h1>
+            <p className="text-blue-200 text-xs uppercase tracking-widest font-semibold mt-1">
+              {cycle}º Ciclo {cycle === 4 ? '(Overhaul)' : '(Reparo)'}
+            </p>
+          </div>
+          <div className="w-9"></div> {/* Espaçador */}
+        </div>
+
+        {/* Progress Bar / Steps */}
+        <div className="flex justify-between relative px-4 max-w-md mx-auto">
+          <div className="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 -z-10 -translate-y-1/2 rounded-full"></div>
+          {steps.map((stepName, index) => (
+            <div key={index} className="flex flex-col items-center gap-1 bg-blue-900 px-2">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-colors duration-300 ${
+                currentStep === index 
+                  ? 'border-white bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)]' 
+                  : currentStep > index 
+                    ? 'border-emerald-400 bg-emerald-400 text-blue-900' 
+                    : 'border-blue-800 bg-blue-900 text-blue-400'
+              }`}>
+                {currentStep > index ? <CheckCircle2 className="w-6 h-6" /> : getStepIcon(index)}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full">
+          {steps[currentStep]}
+        </div>
+      </div>
+
+      {/* Lista de Tarefas */}
+      <div className="flex-1 p-4 pb-28 overflow-y-auto w-full max-w-md mx-auto">
+        <div className="space-y-4">
+          {checklist[currentStep]?.map((item) => (
+            <div 
+              key={item.id}
+              onClick={() => toggleCheck(item.id)}
+              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex gap-4 items-start ${
+                checkedItems[item.id] 
+                  ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' 
+                  : item.highlight === 'alert'
+                    ? 'bg-orange-50/80 border-orange-300 shadow-sm'
+                    : item.highlight === 'info'
+                      ? 'bg-blue-50/80 border-blue-300 shadow-sm'
+                      : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'
+              }`}
+            >
+              <div className={`mt-0.5 shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors ${
+                checkedItems[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'
+              }`}>
+                {checkedItems[item.id] && <CheckCircle2 className="w-5 h-5 text-white" />}
+              </div>
+              <div className="flex-1 pt-0.5">
+                <p className={`text-sm leading-snug ${
+                  checkedItems[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'
+                }`}>
+                  {item.highlight === 'alert' && !checkedItems[item.id] && <AlertTriangle className="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" />}
+                  {item.highlight === 'info' && !checkedItems[item.id] && <Info className="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" />}
+                  {item.text}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
+        <div className="max-w-md mx-auto flex justify-between gap-4">
+          <button
+            onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+            disabled={currentStep === 0}
+            className={`flex-1 py-4 px-4 rounded-2xl font-bold text-sm transition-all ${
+              currentStep === 0 ? 'bg-slate-50 text-slate-300 border border-slate-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95'
+            }`}
+          >
+            Voltar
+          </button>
+          
+          {currentStep < steps.length - 1 ? (
+            <button
+              onClick={() => setCurrentStep(prev => Math.min(steps.length - 1, prev + 1))}
+              className={`flex-[2] py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                allCurrentChecked()
+                  ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-[0_5px_15px_rgba(30,58,138,0.3)] active:scale-95'
+                  : 'bg-blue-50 text-blue-300 border border-blue-100'
+              }`}
+            >
+              Avançar <ArrowRight className="w-5 h-5" />
+            </button>
+          ) : (
+             <button
+              onClick={() => {
+                alert("Bancada finalizada com sucesso! Todas as etapas concluídas.");
+                setScreen('home');
+              }}
+              className={`flex-[2] py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                allCurrentChecked()
+                  ? 'bg-emerald-500 text-white shadow-[0_5px_15px_rgba(16,185,129,0.3)] active:scale-95'
+                  : 'bg-emerald-50 text-emerald-200 border border-emerald-100'
+              }`}
+            >
+              Finalizar OS <CheckCircle2 className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+```
