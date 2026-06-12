@@ -3,28 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup LATAM - Freios</title>
-    <!-- Tailwind CSS para o visual -->
+    <title>Setup LATAM - Freios (Módulos)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Plugin Collapse do Alpine (Para o efeito de abrir/fechar a sanfona) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <!-- Alpine.js para a lógica do App -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased" x-data="appData()">
 
-    <!-- TELA INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col">
-            <!-- Header -->
             <div class="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-90"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.6L3 8l5 5-3 3-3-1-1 1 2.5 4.5L11 23l1-1-1-3 3-3 5 5 1.2-.7c.4-.2.7-.6.6-1.1z"/></svg>
                 <h1 class="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
-                <p class="text-red-100 mt-1 font-medium">Guia Operacional de Freios</p>
+                <p class="text-red-100 mt-1 font-medium">Guia Operacional Avançado</p>
             </div>
 
             <div class="flex-1 p-6 flex flex-col justify-center space-y-8">
-                <!-- Seleção de Modelo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
                     <div class="grid grid-cols-3 gap-3">
@@ -36,7 +29,6 @@
                     </div>
                 </div>
 
-                <!-- Seleção de Ciclo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
                     <div class="grid grid-cols-4 gap-3">
@@ -52,7 +44,6 @@
                     </div>
                 </div>
 
-                <!-- Iniciar -->
                 <button @click="startApp()" :disabled="!model || !cycle"
                     :class="(model && cycle) ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95' : 'bg-slate-100 text-slate-300 cursor-not-allowed'"
                     class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300">
@@ -63,9 +54,8 @@
         </div>
     </div>
 
-    <!-- TELA DO CHECKLIST -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
-        <!-- Header Fixo -->
+        
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
                 <button @click="screen = 'home'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition active:scale-90">
@@ -80,16 +70,13 @@
                 <div class="w-9"></div>
             </div>
 
-            <!-- Progress Bar -->
             <div class="flex justify-between relative px-4">
                 <div class="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 -z-10 -translate-y-1/2 rounded-full"></div>
                 <template x-for="(name, index) in stepNames">
                     <div class="flex flex-col items-center gap-1 bg-blue-900 px-2">
                         <div :class="step === index ? 'border-white bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)]' : (step > index ? 'border-emerald-400 bg-emerald-400 text-blue-900' : 'border-blue-800 bg-blue-900 text-blue-400')"
                              class="w-10 h-10 rounded-full flex items-center justify-center border-4 transition-colors duration-300">
-                             <!-- Ícone Check para passos concluídos -->
                              <svg x-show="step > index" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                             <!-- Ícones das etapas -->
                              <div x-show="step <= index" x-html="getStepIcon(index)"></div>
                         </div>
                     </div>
@@ -98,53 +85,28 @@
             <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full" x-text="stepNames[step]"></div>
         </div>
 
-        <!-- Lista de Tarefas (Com Accordions por Grupo) -->
-        <div class="flex-1 p-4 pb-28 overflow-y-auto">
-            <template x-for="group in currentChecklist()" :key="group.title">
-                <div class="mb-2" x-data="{ open: true }">
-                    
-                    <!-- Botão do Accordion (Aparece apenas se tiver mais de um grupo na tela) -->
-                    <button x-show="currentChecklist().length > 1" @click="open = !open" 
-                        class="w-full flex justify-between items-center bg-white border border-slate-200 shadow-sm p-4 rounded-2xl text-blue-900 font-extrabold text-sm uppercase tracking-wider mb-4 transition-all active:scale-[0.98]">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                            <span x-text="group.title"></span>
+        <div class="flex-1 p-5 pb-28 overflow-y-auto">
+            <p class="text-slate-500 text-sm font-semibold mb-4 text-center">Selecione a operação para visualizar os detalhes:</p>
+            <div class="space-y-4">
+                <template x-for="module in currentModules()" :key="module.id">
+                    <button @click="openModule(module)" 
+                        class="w-full flex justify-between items-center bg-white border border-slate-200 shadow-sm p-5 rounded-2xl text-blue-900 font-extrabold text-base uppercase tracking-wider transition-all active:scale-[0.98] hover:border-blue-300 group">
+                        
+                        <div class="flex items-center gap-4 text-left">
+                            <div :class="isModuleComplete(module) ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-slate-50 border-slate-300 text-slate-300'" class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors">
+                                <svg x-show="isModuleComplete(module)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/></svg>
+                            </div>
+                            <span x-text="module.title" :class="isModuleComplete(module) ? 'text-emerald-700' : ''"></span>
                         </div>
-                        <svg :class="open ? 'rotate-180' : ''" class="w-5 h-5 text-slate-400 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        
+                        <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                            <svg class="w-5 h-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </div>
                     </button>
-
-                    <!-- Lista de Itens do Grupo -->
-                    <div x-show="open" x-collapse>
-                        <div class="space-y-4 mb-6">
-                            <template x-for="item in group.items" :key="item.id">
-                                <div @click="toggleCheck(item.id)" 
-                                     :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'))"
-                                     class="p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex gap-4 items-start">
-                                    
-                                    <!-- Checkbox visual -->
-                                    <div :class="checked[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'"
-                                         class="mt-0.5 shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors">
-                                        <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                                    </div>
-
-                                    <!-- Texto da Tarefa -->
-                                    <div class="flex-1 pt-0.5">
-                                        <p :class="checked[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'" class="text-sm leading-snug">
-                                            <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                                            <svg x-show="item.highlight === 'info' && !checked[item.id]" class="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                            <span x-text="item.text"></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
 
-        <!-- Footer / Navegação -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto flex justify-between gap-4">
                 <button @click="step = Math.max(0, step - 1)" :disabled="step === 0"
@@ -156,7 +118,7 @@
                 <button x-show="step < stepNames.length - 1" @click="step = Math.min(stepNames.length - 1, step + 1)"
                     :class="isStepComplete() ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-[0_5px_15px_rgba(30,58,138,0.3)] active:scale-95' : 'bg-blue-50 text-blue-300 border border-blue-100'"
                     class="flex-[2] py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all">
-                    Avançar 
+                    Avançar Etapa
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
 
@@ -170,14 +132,70 @@
         </div>
     </div>
 
-    <!-- Lógica do App -->
+    <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
+        <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-slate-200">
+            <div class="flex items-center gap-4">
+                <button @click="closeModule()" class="p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition active:scale-90">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div>
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-widest" x-text="stepNames[step]"></p>
+                    <h2 class="text-lg font-black text-slate-800 leading-tight" x-text="activeModule?.title"></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 p-4 pb-28 overflow-y-auto space-y-6">
+            
+            <div x-show="activeModule?.hasImage" class="bg-slate-200 border-2 border-dashed border-slate-300 rounded-2xl h-48 flex flex-col items-center justify-center text-slate-500 overflow-hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 opacity-50"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                <span class="text-sm font-medium">Espaço para Foto / Diagrama</span>
+                <span class="text-xs opacity-70 mt-1" x-text="'(Ref: ' + activeModule?.title + ')'"></span>
+            </div>
+
+            <div class="space-y-3">
+                <template x-for="item in activeModule?.items" :key="item.id">
+                    <div @click="toggleCheck(item.id)" 
+                         :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'))"
+                         class="p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex gap-4 items-start">
+                        
+                        <div :class="checked[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'"
+                             class="mt-0.5 shrink-0 w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors">
+                            <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/></svg>
+                        </div>
+
+                        <div class="flex-1 pt-0.5">
+                            <p :class="checked[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'" class="text-sm leading-snug">
+                                <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                                <svg x-show="item.highlight === 'info' && !checked[item.id]" class="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                <span x-text="item.text"></span>
+                            </p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
+            <div class="max-w-md mx-auto">
+                <button @click="closeModule()"
+                    :class="isModuleComplete(activeModule) ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-[0_5px_15px_rgba(30,58,138,0.3)]' : 'bg-slate-200 text-slate-700'"
+                    class="w-full py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95">
+                    <span x-text="isModuleComplete(activeModule) ? 'Módulo Concluído - Voltar' : 'Voltar para Lista'"></span>
+                    <svg x-show="isModuleComplete(activeModule)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
-                screen: 'home',
+                screen: 'home', // 'home' | 'checklist' | 'module'
                 model: null,
                 cycle: null,
                 step: 0,
+                activeModule: null, // Armazena o módulo que está aberto na Sub-Aba
                 checked: {},
                 stepNames: ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'],
 
@@ -200,15 +218,33 @@
                     }
                 },
 
+                openModule(module) {
+                    this.activeModule = module;
+                    this.screen = 'module';
+                    window.scrollTo(0, 0);
+                },
+
+                closeModule() {
+                    this.activeModule = null;
+                    this.screen = 'checklist';
+                    window.scrollTo(0, 0);
+                },
+
                 toggleCheck(id) {
                     this.checked[id] = !this.checked[id];
                 },
 
+                // Verifica se UM módulo específico está completo
+                isModuleComplete(module) {
+                    if(!module || !module.items) return false;
+                    return module.items.every(item => this.checked[item.id]);
+                },
+
+                // Verifica se a ETAPA inteira (todos os módulos juntos) está completa
                 isStepComplete() {
-                    const groups = this.currentChecklist();
-                    if(!groups || groups.length === 0) return false;
-                    // Pega todos os itens de todos os grupos da aba atual
-                    const allItems = groups.flatMap(group => group.items);
+                    const modules = this.currentModules();
+                    if(!modules || modules.length === 0) return false;
+                    const allItems = modules.flatMap(mod => mod.items);
                     return allItems.every(item => this.checked[item.id]);
                 },
 
@@ -222,7 +258,8 @@
                     return icons[index];
                 },
 
-                currentChecklist() {
+                // Geração dinâmica dos Módulos baseada na Etapa Atual
+                currentModules() {
                     if (!this.model || !this.cycle) return [];
 
                     const isA321 = this.model === 'A321';
@@ -230,12 +267,14 @@
                     const isOverhaul = this.cycle === 4;
                     const descartaVedacoes = isA321 ? true : (this.cycle === 2 || this.cycle === 4);
 
-                    let stepsGroups = [];
+                    let stepsData = [];
 
-                    // PASSO 0: PREPARAÇÃO
-                    stepsGroups[0] = [
+                    // --- ETAPA 0: PREPARAÇÃO ---
+                    stepsData[0] = [
                         {
-                            title: 'Preparação Inicial',
+                            id: 'prep_mod',
+                            title: 'Preparação de Sistema',
+                            hasImage: false, // Define se mostra a caixa de imagem
                             items: [
                                 { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
                                 { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
@@ -243,17 +282,25 @@
                         }
                     ];
 
-                    // PASSO 1: DESMONTAGEM (Aqui dividimos em Torque Tube e Piston House)
+                    // --- ETAPA 1: DESMONTAGEM ---
+                    
+                    // Módulo 1: O NOVO PASSO DE DRENAGEM
+                    let drenagemItems = [
+                        { id: 'dren_1', text: 'Posicionar o recipiente adequado abaixo do conjunto.', highlight: 'info' },
+                        { id: 'dren_2', text: 'Drenar todo o fluido hidráulico do componente antes de iniciar a desmontagem.' }
+                    ];
+
+                    // Módulo 2: Torque Tube
                     let torqueTubeItems = [
                         { id: 'desm_1', text: isA321 ? 'Atenção A321: Pegar SOMENTE o Piston House para desmontar.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House na horizontal.', highlight: 'info' },
                         { id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor e catraca para fixação principal. (Segurar parafuso por baixo).' },
                         { id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' }
                     ];
-                    // Overhaul vai para o Torque Tube
                     if (isOverhaul) {
                         torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' });
                     }
 
+                    // Módulo 3: Piston House
                     let pistonHouseItems = [
                         { id: 'desm_4', text: 'Ferramenta: Usar Soquete 1/4" para soltar os parafusos do tubinho.' }
                     ];
@@ -270,15 +317,19 @@
                         highlight: descartaVedacoes ? 'alert' : 'info'
                     });
 
-                    stepsGroups[1] = [
-                        { title: 'Torque Tube', items: torqueTubeItems },
-                        { title: 'Piston House', items: pistonHouseItems }
+                    // Agrupando os módulos da Etapa 1
+                    stepsData[1] = [
+                        { id: 'mod_drenagem', title: 'Drenar o fluido hidráulico', hasImage: true, items: drenagemItems },
+                        { id: 'mod_torque', title: 'Torque Tube', hasImage: false, items: torqueTubeItems },
+                        { id: 'mod_piston', title: 'Piston House', hasImage: true, items: pistonHouseItems }
                     ];
 
-                    // PASSO 2: DOCUMENTAÇÃO
-                    stepsGroups[2] = [
+                    // --- ETAPA 2: DOCUMENTAÇÃO ---
+                    stepsData[2] = [
                         {
-                            title: 'Preenchimento de Documentos',
+                            id: 'doc_mod',
+                            title: 'Formulários e Fitas',
+                            hasImage: false,
                             items: [
                                 { id: 'doc_1', text: 'Repair Request: Colar fita verde (BARCODE + S/N) no plástico protetor.' },
                                 { id: 'doc_2', text: 'Repair Request: Preencher com "QSCMY63 - Oficina Limpeza Técnica".' },
@@ -291,10 +342,12 @@
                         }
                     ];
 
-                    // PASSO 3: DESPACHO
-                    stepsGroups[3] = [
+                    // --- ETAPA 3: DESPACHO ---
+                    stepsData[3] = [
                         {
-                            title: 'Logística e Sistema',
+                            id: 'fin_mod',
+                            title: 'Destinos e Sistema',
+                            hasImage: false,
                             items: [
                                 { id: 'fin_1', text: isA321 ? 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Piston House + Itens 160 e 170 + Repair Request.' : 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube + Piston House + Repair Request.' },
                                 { id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA: Guardar pasta no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada.', highlight: isA321 ? 'alert' : 'info' },
@@ -305,7 +358,7 @@
                         }
                     ];
 
-                    return stepsGroups[this.step];
+                    return stepsData[this.step];
                 }
             }));
         });
