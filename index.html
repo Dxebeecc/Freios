@@ -6,7 +6,9 @@
     <title>Setup LATAM - Freios</title>
     <!-- Tailwind CSS para o visual -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js para a lógica do App (funciona igual React, mas direto no HTML) -->
+    <!-- Plugin Collapse do Alpine (Para o efeito de abrir/fechar a sanfona) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js para a lógica do App -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased" x-data="appData()">
@@ -62,7 +64,7 @@
     </div>
 
     <!-- TELA DO CHECKLIST -->
-    <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50">
+    <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
         <!-- Header Fixo -->
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
@@ -85,10 +87,8 @@
                     <div class="flex flex-col items-center gap-1 bg-blue-900 px-2">
                         <div :class="step === index ? 'border-white bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)]' : (step > index ? 'border-emerald-400 bg-emerald-400 text-blue-900' : 'border-blue-800 bg-blue-900 text-blue-400')"
                              class="w-10 h-10 rounded-full flex items-center justify-center border-4 transition-colors duration-300">
-                             
                              <!-- Ícone Check para passos concluídos -->
                              <svg x-show="step > index" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                             
                              <!-- Ícones das etapas -->
                              <div x-show="step <= index" x-html="getStepIcon(index)"></div>
                         </div>
@@ -98,34 +98,50 @@
             <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full" x-text="stepNames[step]"></div>
         </div>
 
-        <!-- Lista de Tarefas -->
+        <!-- Lista de Tarefas (Com Accordions por Grupo) -->
         <div class="flex-1 p-4 pb-28 overflow-y-auto">
-            <div class="space-y-4">
-                <template x-for="item in currentChecklist()" :key="item.id">
-                    <div @click="toggleCheck(item.id)" 
-                         :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'))"
-                         class="p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex gap-4 items-start">
-                        
-                        <!-- Checkbox visual -->
-                        <div :class="checked[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'"
-                             class="mt-0.5 shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors">
-                            <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <template x-for="group in currentChecklist()" :key="group.title">
+                <div class="mb-2" x-data="{ open: true }">
+                    
+                    <!-- Botão do Accordion (Aparece apenas se tiver mais de um grupo na tela) -->
+                    <button x-show="currentChecklist().length > 1" @click="open = !open" 
+                        class="w-full flex justify-between items-center bg-white border border-slate-200 shadow-sm p-4 rounded-2xl text-blue-900 font-extrabold text-sm uppercase tracking-wider mb-4 transition-all active:scale-[0.98]">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                            <span x-text="group.title"></span>
                         </div>
+                        <svg :class="open ? 'rotate-180' : ''" class="w-5 h-5 text-slate-400 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
 
-                        <!-- Texto da Tarefa -->
-                        <div class="flex-1 pt-0.5">
-                            <p :class="checked[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'" class="text-sm leading-snug">
-                                <!-- Ícone de Alerta -->
-                                <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                                <!-- Ícone de Info -->
-                                <svg x-show="item.highlight === 'info' && !checked[item.id]" class="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                
-                                <span x-text="item.text"></span>
-                            </p>
+                    <!-- Lista de Itens do Grupo -->
+                    <div x-show="open" x-collapse>
+                        <div class="space-y-4 mb-6">
+                            <template x-for="item in group.items" :key="item.id">
+                                <div @click="toggleCheck(item.id)" 
+                                     :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'))"
+                                     class="p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex gap-4 items-start">
+                                    
+                                    <!-- Checkbox visual -->
+                                    <div :class="checked[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'"
+                                         class="mt-0.5 shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors">
+                                        <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                    </div>
+
+                                    <!-- Texto da Tarefa -->
+                                    <div class="flex-1 pt-0.5">
+                                        <p :class="checked[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'" class="text-sm leading-snug">
+                                            <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                                            <svg x-show="item.highlight === 'info' && !checked[item.id]" class="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                            <span x-text="item.text"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
-                </template>
-            </div>
+
+                </div>
+            </template>
         </div>
 
         <!-- Footer / Navegação -->
@@ -170,6 +186,7 @@
                         this.screen = 'checklist';
                         this.step = 0;
                         this.checked = {};
+                        window.scrollTo(0, 0);
                     }
                 },
 
@@ -188,9 +205,11 @@
                 },
 
                 isStepComplete() {
-                    const list = this.currentChecklist();
-                    if(!list || list.length === 0) return false;
-                    return list.every(item => this.checked[item.id]);
+                    const groups = this.currentChecklist();
+                    if(!groups || groups.length === 0) return false;
+                    // Pega todos os itens de todos os grupos da aba atual
+                    const allItems = groups.flatMap(group => group.items);
+                    return allItems.every(item => this.checked[item.id]);
                 },
 
                 getStepIcon(index) {
@@ -211,57 +230,82 @@
                     const isOverhaul = this.cycle === 4;
                     const descartaVedacoes = isA321 ? true : (this.cycle === 2 || this.cycle === 4);
 
-                    let step1 = [
-                        { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
-                        { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
+                    let stepsGroups = [];
+
+                    // PASSO 0: PREPARAÇÃO
+                    stepsGroups[0] = [
+                        {
+                            title: 'Preparação Inicial',
+                            items: [
+                                { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
+                                { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
+                            ]
+                        }
                     ];
 
-                    let step2 = [
+                    // PASSO 1: DESMONTAGEM (Aqui dividimos em Torque Tube e Piston House)
+                    let torqueTubeItems = [
                         { id: 'desm_1', text: isA321 ? 'Atenção A321: Pegar SOMENTE o Piston House para desmontar.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House na horizontal.', highlight: 'info' },
                         { id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor e catraca para fixação principal. (Segurar parafuso por baixo).' },
-                        { id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' },
+                        { id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' }
+                    ];
+                    // Overhaul vai para o Torque Tube
+                    if (isOverhaul) {
+                        torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' });
+                    }
+
+                    let pistonHouseItems = [
                         { id: 'desm_4', text: 'Ferramenta: Usar Soquete 1/4" para soltar os parafusos do tubinho.' }
                     ];
-
                     if (isA321) {
-                        step2.push({ id: 'desm_5', text: 'Itens 160 (Bushing) e 170 (Trava): SALVAR. Vão para limpeza junto com o Piston.', highlight: 'info' });
-                        step2.push({ id: 'desm_6', text: 'Item 180 (Vedação menor): DESCARTAR no lixo.', highlight: 'alert' });
+                        pistonHouseItems.push({ id: 'desm_5', text: 'Itens 160 (Bushing) e 170 (Trava): SALVAR. Vão para limpeza junto com o Piston.', highlight: 'info' });
+                        pistonHouseItems.push({ id: 'desm_6', text: 'Item 180 (Vedação menor): DESCARTAR no lixo.', highlight: 'alert' });
                     }
-
                     if (isA320) {
-                        step2.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly): DESCARTAR no lixo. (Não existem itens 160/170 neste modelo).', highlight: 'alert' });
+                        pistonHouseItems.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly): DESCARTAR no lixo. (Não existem itens 160/170 neste modelo).', highlight: 'alert' });
                     }
-
-                    if (isOverhaul) {
-                        step2.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' });
-                    }
-
-                    step2.push({ 
+                    pistonHouseItems.push({ 
                         id: 'desm_vedacoes', 
                         text: descartaVedacoes ? 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): Cortar e DESCARTAR no lixo.' : 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): SALVAR. Colocar no saquinho com fita verde (Tally Sheet + S/N) e guardar na pasta.',
                         highlight: descartaVedacoes ? 'alert' : 'info'
                     });
 
-                    let step3 = [
-                        { id: 'doc_1', text: 'Repair Request: Colar fita verde (BARCODE + S/N) no plástico protetor.' },
-                        { id: 'doc_2', text: 'Repair Request: Preencher com "QSCMY63 - Oficina Limpeza Técnica".' },
-                        { id: 'doc_3', text: 'Repair Request: Preencher com "Perform the cleaning IAW-IT-CPQ-004".' },
-                        { id: 'doc_4', text: 'Repair Request: Preencher com "Identification Plate: IN".' },
-                        { id: 'doc_5', text: `Component Restoration Form: Preencher NUMBER of cycles (${this.cycle}).` },
-                        { id: 'doc_6', text: 'Component Restoration Form: Em Remarks escrever "This component was disassembled IAW page 3001 to 3012".' },
-                        { id: 'doc_7', text: 'Assinatura: Carimbar (LATAM-6022470 Wellington), datar e rubricar abaixo da data.' }
+                    stepsGroups[1] = [
+                        { title: 'Torque Tube', items: torqueTubeItems },
+                        { title: 'Piston House', items: pistonHouseItems }
                     ];
 
-                    let step4 = [
-                        { id: 'fin_1', text: isA321 ? 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Piston House + Itens 160 e 170 + Repair Request.' : 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube + Piston House + Repair Request.' },
-                        { id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA: Guardar pasta no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada.', highlight: isA321 ? 'alert' : 'info' },
-                        { id: 'fin_3', text: 'SISTEMA: Atualizar Planilha de Movimentação para "Limpeza Técnica 2".' },
-                        { id: 'fin_4', text: 'SISTEMA: Finalizar a Ordem de Serviço (OS) no Mysys.' },
-                        { id: 'fin_5', text: 'DESPACHO: Colher a ASSINATURA do responsável pelo despacho do freio.', highlight: 'alert' }
+                    // PASSO 2: DOCUMENTAÇÃO
+                    stepsGroups[2] = [
+                        {
+                            title: 'Preenchimento de Documentos',
+                            items: [
+                                { id: 'doc_1', text: 'Repair Request: Colar fita verde (BARCODE + S/N) no plástico protetor.' },
+                                { id: 'doc_2', text: 'Repair Request: Preencher com "QSCMY63 - Oficina Limpeza Técnica".' },
+                                { id: 'doc_3', text: 'Repair Request: Preencher com "Perform the cleaning IAW-IT-CPQ-004".' },
+                                { id: 'doc_4', text: 'Repair Request: Preencher com "Identification Plate: IN".' },
+                                { id: 'doc_5', text: `Component Restoration Form: Preencher NUMBER of cycles (${this.cycle}).` },
+                                { id: 'doc_6', text: 'Component Restoration Form: Em Remarks escrever "This component was disassembled IAW page 3001 to 3012".' },
+                                { id: 'doc_7', text: 'Assinatura: Carimbar (LATAM-6022470 Wellington), datar e rubricar abaixo da data.' }
+                            ]
+                        }
                     ];
 
-                    const allSteps = [step1, step2, step3, step4];
-                    return allSteps[this.step];
+                    // PASSO 3: DESPACHO
+                    stepsGroups[3] = [
+                        {
+                            title: 'Logística e Sistema',
+                            items: [
+                                { id: 'fin_1', text: isA321 ? 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Piston House + Itens 160 e 170 + Repair Request.' : 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube + Piston House + Repair Request.' },
+                                { id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA: Guardar pasta no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada.', highlight: isA321 ? 'alert' : 'info' },
+                                { id: 'fin_3', text: 'SISTEMA: Atualizar Planilha de Movimentação para "Limpeza Técnica 2".' },
+                                { id: 'fin_4', text: 'SISTEMA: Finalizar a Ordem de Serviço (OS) no Mysys.' },
+                                { id: 'fin_5', text: 'DESPACHO: Colher a ASSINATURA do responsável pelo despacho do freio.', highlight: 'alert' }
+                            ]
+                        }
+                    ];
+
+                    return stepsGroups[this.step];
                 }
             }));
         });
