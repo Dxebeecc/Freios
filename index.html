@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup LATAM - Freios (Módulos)</title>
+    <!-- Tailwind CSS para o visual -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js para a lógica do App -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased" x-data="appData()">
 
+    <!-- TELA 1: INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col">
+            <!-- Header -->
             <div class="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-90"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.6L3 8l5 5-3 3-3-1-1 1 2.5 4.5L11 23l1-1-1-3 3-3 5 5 1.2-.7c.4-.2.7-.6.6-1.1z"/></svg>
                 <h1 class="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
@@ -18,10 +22,11 @@
             </div>
 
             <div class="flex-1 p-6 flex flex-col justify-center space-y-8">
+                <!-- Seleção de Modelo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
-                    <div class="grid grid-cols-3 gap-3">
-                        <template x-for="m in ['A320', 'A320 NEO', 'A321']">
+                    <div class="grid grid-cols-2 gap-3">
+                        <template x-for="m in ['A320', 'A320 NEO', 'A321', 'B777']">
                             <button @click="model = m" 
                                 :class="model === m ? 'bg-blue-900 text-white shadow-[0_8px_16px_rgba(30,58,138,0.3)] scale-105' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'"
                                 class="py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-200" x-text="m"></button>
@@ -29,6 +34,7 @@
                     </div>
                 </div>
 
+                <!-- Seleção de Ciclo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
                     <div class="grid grid-cols-4 gap-3">
@@ -44,6 +50,7 @@
                     </div>
                 </div>
 
+                <!-- Iniciar -->
                 <button @click="startApp()" :disabled="!model || !cycle"
                     :class="(model && cycle) ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95' : 'bg-slate-100 text-slate-300 cursor-not-allowed'"
                     class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300">
@@ -54,8 +61,9 @@
         </div>
     </div>
 
+    <!-- TELA 2: LISTA DE MÓDULOS (MENU DA ETAPA) -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
-        
+        <!-- Header Fixo da Etapa -->
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
                 <button @click="screen = 'home'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition active:scale-90">
@@ -70,6 +78,7 @@
                 <div class="w-9"></div>
             </div>
 
+            <!-- Progress Bar -->
             <div class="flex justify-between relative px-4">
                 <div class="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 -z-10 -translate-y-1/2 rounded-full"></div>
                 <template x-for="(name, index) in stepNames">
@@ -85,6 +94,7 @@
             <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full" x-text="stepNames[step]"></div>
         </div>
 
+        <!-- Módulos como Botões Gigantes -->
         <div class="flex-1 p-5 pb-28 overflow-y-auto">
             <p class="text-slate-500 text-sm font-semibold mb-4 text-center">Selecione a operação para visualizar os detalhes:</p>
             <div class="space-y-4">
@@ -107,6 +117,7 @@
             </div>
         </div>
 
+        <!-- Navegação Inferior (Rodapé Principal) -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto flex justify-between gap-4">
                 <button @click="step = Math.max(0, step - 1)" :disabled="step === 0"
@@ -132,7 +143,9 @@
         </div>
     </div>
 
+    <!-- TELA 3: SUB-ABA (DETALHES DA OPERAÇÃO) -->
     <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
+        <!-- Header da Sub-Aba -->
         <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-slate-200">
             <div class="flex items-center gap-4">
                 <button @click="closeModule()" class="p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition active:scale-90">
@@ -145,6 +158,7 @@
             </div>
         </div>
 
+        <!-- Conteúdo da Sub-Aba -->
         <div class="flex-1 p-4 pb-28 overflow-y-auto space-y-6">
             
             <div x-show="activeModule?.hasImage" class="bg-slate-200 border-2 border-dashed border-slate-300 rounded-2xl h-48 flex flex-col items-center justify-center text-slate-500 overflow-hidden">
@@ -153,6 +167,7 @@
                 <span class="text-xs opacity-70 mt-1" x-text="'(Ref: ' + activeModule?.title + ')'"></span>
             </div>
 
+            <!-- Lista de Tarefas -->
             <div class="space-y-3">
                 <template x-for="item in activeModule?.items" :key="item.id">
                     <div @click="toggleCheck(item.id)" 
@@ -176,6 +191,7 @@
             </div>
         </div>
 
+        <!-- Botão Flutuante de Voltar -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto">
                 <button @click="closeModule()"
@@ -188,14 +204,15 @@
         </div>
     </div>
 
+    <!-- Lógica do App (Alpine) -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
-                screen: 'home', // 'home' | 'checklist' | 'module'
+                screen: 'home',
                 model: null,
                 cycle: null,
                 step: 0,
-                activeModule: null, // Armazena o módulo que está aberto na Sub-Aba
+                activeModule: null, 
                 checked: {},
                 stepNames: ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'],
 
@@ -234,13 +251,11 @@
                     this.checked[id] = !this.checked[id];
                 },
 
-                // Verifica se UM módulo específico está completo
                 isModuleComplete(module) {
                     if(!module || !module.items) return false;
                     return module.items.every(item => this.checked[item.id]);
                 },
 
-                // Verifica se a ETAPA inteira (todos os módulos juntos) está completa
                 isStepComplete() {
                     const modules = this.currentModules();
                     if(!modules || modules.length === 0) return false;
@@ -258,14 +273,14 @@
                     return icons[index];
                 },
 
-                // Geração dinâmica dos Módulos baseada na Etapa Atual
                 currentModules() {
                     if (!this.model || !this.cycle) return [];
 
                     const isA321 = this.model === 'A321';
+                    const isB777 = this.model === 'B777';
                     const isA320 = this.model === 'A320' || this.model === 'A320 NEO';
                     const isOverhaul = this.cycle === 4;
-                    const descartaVedacoes = isA321 ? true : (this.cycle === 2 || this.cycle === 4);
+                    const descartaVedacoesA32X = isA321 ? true : (this.cycle === 2 || this.cycle === 4);
 
                     let stepsData = [];
 
@@ -274,7 +289,7 @@
                         {
                             id: 'prep_mod',
                             title: 'Preparação de Sistema',
-                            hasImage: false, // Define se mostra a caixa de imagem
+                            hasImage: false,
                             items: [
                                 { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
                                 { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
@@ -283,43 +298,57 @@
                     ];
 
                     // --- ETAPA 1: DESMONTAGEM ---
-                    
-                    // Módulo 1: O NOVO PASSO DE DRENAGEM
-                    let drenagemItems = [
-                        { id: 'dren_1', text: 'Posicionar o recipiente adequado abaixo do conjunto.', highlight: 'info' },
-                        { id: 'dren_2', text: 'Drenar todo o fluido hidráulico do componente antes de iniciar a desmontagem.' }
-                    ];
-
-                    // Módulo 2: Torque Tube
-                    let torqueTubeItems = [
-                        { id: 'desm_1', text: isA321 ? 'Atenção A321: Pegar SOMENTE o Piston House para desmontar.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House na horizontal.', highlight: 'info' },
-                        { id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor e catraca para fixação principal. (Segurar parafuso por baixo).' },
-                        { id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' }
-                    ];
-                    if (isOverhaul) {
-                        torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' });
+                    let drenagemItems = [];
+                    if (isB777) {
+                        drenagemItems.push({ id: 'dren_b1', text: 'Retirar o parafuso e a arruela da conexão.' });
+                        drenagemItems.push({ id: 'dren_b2', text: 'Conectar a mangueira de dreno (ponta fina) como manivela e abaixar as canelas dos 6 pistões.', highlight: 'info' });
+                        drenagemItems.push({ id: 'dren_b3', text: 'Dica: Girar as canelas no sentido horário e bater na lateral facilita a descida e evita emperrar o tubinho.', highlight: 'info' });
+                    } else {
+                        drenagemItems.push({ id: 'dren_1', text: 'Posicionar o recipiente adequado abaixo do conjunto.', highlight: 'info' });
+                        drenagemItems.push({ id: 'dren_2', text: 'Drenar todo o fluido hidráulico do componente antes de iniciar a desmontagem.' });
                     }
 
-                    // Módulo 3: Piston House
-                    let pistonHouseItems = [
-                        { id: 'desm_4', text: 'Ferramenta: Usar Soquete 1/4" para soltar os parafusos do tubinho.' }
-                    ];
-                    if (isA321) {
-                        pistonHouseItems.push({ id: 'desm_5', text: 'Itens 160 (Bushing) e 170 (Trava): SALVAR. Vão para limpeza junto com o Piston.', highlight: 'info' });
-                        pistonHouseItems.push({ id: 'desm_6', text: 'Item 180 (Vedação menor): DESCARTAR no lixo.', highlight: 'alert' });
+                    let torqueTubeItems = [];
+                    if (isB777) {
+                        if (isOverhaul) {
+                            torqueTubeItems.push({ id: 'tt_b1', text: 'OVERHAUL (4º Ciclo): Não há desmontagem no Torque Tube. Apenas enviar junto por ser overhaul. (Nota: Ref. pág 5000 para peças enviadas ao NDT).', highlight: 'info' });
+                        } else {
+                            torqueTubeItems.push({ id: 'tt_b2', text: 'Torque Tube: Nenhuma ação de desmontagem complexa requerida neste ciclo.' });
+                        }
+                    } else {
+                        torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Pegar SOMENTE o Piston House para desmontar.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House na horizontal.', highlight: 'info' });
+                        torqueTubeItems.push({ id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor e catraca para fixação principal. (Segurar parafuso por baixo).' });
+                        torqueTubeItems.push({ id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira para os 3 parafusos maiores.' });
+                        if (isOverhaul) {
+                            torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa para remover os pinos.', highlight: 'alert' });
+                        }
                     }
-                    if (isA320) {
-                        pistonHouseItems.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly): DESCARTAR no lixo. (Não existem itens 160/170 neste modelo).', highlight: 'alert' });
-                    }
-                    pistonHouseItems.push({ 
-                        id: 'desm_vedacoes', 
-                        text: descartaVedacoes ? 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): Cortar e DESCARTAR no lixo.' : 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): SALVAR. Colocar no saquinho com fita verde (Tally Sheet + S/N) e guardar na pasta.',
-                        highlight: descartaVedacoes ? 'alert' : 'info'
-                    });
 
-                    // Agrupando os módulos da Etapa 1
+                    let pistonHouseItems = [];
+                    if (isB777) {
+                        pistonHouseItems.push({ id: 'ph_b1', text: 'Ferramentas (Pág 3001 e desenhos Pág 9000+): Soquetes 12-pt 5/16" e 11/16", R47956/F27701000, R47166, R47163, Espátula e Pick tool T48221.' });
+                        if (isOverhaul) {
+                            pistonHouseItems.push({ id: 'ph_b2', text: 'OVERHAUL: Fazer desmontagem completa. IMPORTANTE: Não esquecer das conexões e de não perder a placa de identificação no piston house.', highlight: 'alert' });
+                        }
+                        pistonHouseItems.push({ id: 'ph_b3', text: 'DESCARTE TOTAL: Descartar TODAS as vedações e TODAS as partes internas do pistão no lixo. (Regra válida para todos os ciclos).', highlight: 'alert' });
+                    } else {
+                        pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete 1/4" para soltar os parafusos do tubinho.' });
+                        if (isA321) {
+                            pistonHouseItems.push({ id: 'desm_5', text: 'Itens 160 (Bushing) e 170 (Trava): SALVAR. Guardar no saquinho para ir junto com a PASTA.', highlight: 'info' });
+                            pistonHouseItems.push({ id: 'desm_6', text: 'Item 180 (Vedação menor): DESCARTAR no lixo.', highlight: 'alert' });
+                        }
+                        if (isA320) {
+                            pistonHouseItems.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly): DESCARTAR no lixo. (Não existem itens 160/170 neste modelo).', highlight: 'alert' });
+                        }
+                        pistonHouseItems.push({ 
+                            id: 'desm_vedacoes', 
+                            text: descartaVedacoesA32X ? 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): Cortar e DESCARTAR no lixo.' : 'VEDAÇÕES PRINCIPAIS (Caneca/Pistão): SALVAR. Colocar no saquinho com fita verde (Tally Sheet + S/N) e guardar na pasta.',
+                            highlight: descartaVedacoesA32X ? 'alert' : 'info'
+                        });
+                    }
+
                     stepsData[1] = [
-                        { id: 'mod_drenagem', title: 'Drenar o fluido hidráulico', hasImage: true, items: drenagemItems },
+                        { id: 'mod_drenagem', title: isB777 ? 'Drenar Óleo (6 Pistões)' : 'Drenar Fluido Hidráulico', hasImage: true, items: drenagemItems },
                         { id: 'mod_torque', title: 'Torque Tube', hasImage: false, items: torqueTubeItems },
                         { id: 'mod_piston', title: 'Piston House', hasImage: true, items: pistonHouseItems }
                     ];
@@ -343,18 +372,24 @@
                     ];
 
                     // --- ETAPA 3: DESPACHO ---
+                    let despachoItems = [];
+                    if (isB777) {
+                        despachoItems.push({ id: 'fin_1_b', text: 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube (se aplicável) + Piston House + Repair Request.' });
+                        despachoItems.push({ id: 'fin_2_b', text: 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada (verificar procedimentos específicos B777, se houver).', highlight: 'info' });
+                    } else {
+                        despachoItems.push({ id: 'fin_1', text: isA321 ? 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Piston House + Repair Request.' : 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube + Piston House + Repair Request.' });
+                        despachoItems.push({ id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA: Guardar a pasta (COM OS ITENS 160 E 170) no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada.', highlight: isA321 ? 'alert' : 'info' });
+                    }
+                    despachoItems.push({ id: 'fin_3', text: 'SISTEMA: Atualizar Planilha de Movimentação para "Limpeza Técnica 2".' });
+                    despachoItems.push({ id: 'fin_4', text: 'SISTEMA: Finalizar a Ordem de Serviço (OS) no Mysys.' });
+                    despachoItems.push({ id: 'fin_5', text: 'DESPACHO: Colher a ASSINATURA do responsável pelo despacho do freio.', highlight: 'alert' });
+
                     stepsData[3] = [
                         {
                             id: 'fin_mod',
                             title: 'Destinos e Sistema',
                             hasImage: false,
-                            items: [
-                                { id: 'fin_1', text: isA321 ? 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Piston House + Itens 160 e 170 + Repair Request.' : 'LIMPEZA TÉCNICA 2: Enviar fisicamente -> Torque Tube + Piston House + Repair Request.' },
-                                { id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA: Guardar pasta no ARMÁRIO DE AGUARDO DE REPARO (junto com o Torque Tube).' : 'LOGÍSTICA DA PASTA: Guardar a pasta no ARMÁRIO PADRÃO da bancada.', highlight: isA321 ? 'alert' : 'info' },
-                                { id: 'fin_3', text: 'SISTEMA: Atualizar Planilha de Movimentação para "Limpeza Técnica 2".' },
-                                { id: 'fin_4', text: 'SISTEMA: Finalizar a Ordem de Serviço (OS) no Mysys.' },
-                                { id: 'fin_5', text: 'DESPACHO: Colher a ASSINATURA do responsável pelo despacho do freio.', highlight: 'alert' }
-                            ]
+                            items: despachoItems
                         }
                     ];
 
