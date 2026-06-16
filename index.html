@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup LATAM - Freios (Módulos)</title>
-    <!-- Tailwind CSS para o visual -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js para a lógica do App -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased" x-data="appData()">
 
-    <!-- TELA 1: INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col">
-            <!-- Header -->
             <div class="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-90"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.6L3 8l5 5-3 3-3-1-1 1 2.5 4.5L11 23l1-1-1-3 3-3 5 5 1.2-.7c.4-.2.7-.6.6-1.1z"/></svg>
                 <h1 class="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
@@ -22,7 +18,6 @@
             </div>
 
             <div class="flex-1 p-6 flex flex-col justify-center space-y-8">
-                <!-- Seleção de Modelo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
                     <div class="grid grid-cols-2 gap-3">
@@ -34,7 +29,6 @@
                     </div>
                 </div>
 
-                <!-- Seleção de Ciclo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
                     <div class="grid grid-cols-4 gap-3">
@@ -50,7 +44,6 @@
                     </div>
                 </div>
 
-                <!-- Iniciar -->
                 <button @click="startApp()" :disabled="!model || !cycle"
                     :class="(model && cycle) ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95' : 'bg-slate-100 text-slate-300 cursor-not-allowed'"
                     class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300">
@@ -61,9 +54,7 @@
         </div>
     </div>
 
-    <!-- TELA 2: LISTA DE MÓDULOS (MENU DA ETAPA) -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
-        <!-- Header Fixo da Etapa -->
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
                 <button @click="screen = 'home'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition active:scale-90">
@@ -78,7 +69,6 @@
                 <div class="w-9"></div>
             </div>
 
-            <!-- Progress Bar -->
             <div class="flex justify-between relative px-4">
                 <div class="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 -z-10 -translate-y-1/2 rounded-full"></div>
                 <template x-for="(name, index) in stepNames">
@@ -94,7 +84,6 @@
             <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full" x-text="stepNames[step]"></div>
         </div>
 
-        <!-- Módulos como Botões Gigantes -->
         <div class="flex-1 p-5 pb-28 overflow-y-auto">
             <p class="text-slate-500 text-sm font-semibold mb-4 text-center">Selecione a operação para visualizar os detalhes:</p>
             <div class="space-y-4">
@@ -117,7 +106,6 @@
             </div>
         </div>
 
-        <!-- Navegação Inferior (Rodapé Principal) -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto flex justify-between gap-4">
                 <button @click="step = Math.max(0, step - 1)" :disabled="step === 0"
@@ -143,9 +131,7 @@
         </div>
     </div>
 
-    <!-- TELA 3: SUB-ABA (DETALHES DA OPERAÇÃO) -->
     <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
-        <!-- Header da Sub-Aba -->
         <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-slate-200">
             <div class="flex items-center gap-4">
                 <button @click="closeModule()" class="p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition active:scale-90">
@@ -158,7 +144,6 @@
             </div>
         </div>
 
-        <!-- Conteúdo da Sub-Aba -->
         <div class="flex-1 p-4 pb-28 overflow-y-auto space-y-6">
             
             <div x-show="activeModule?.hasImage" class="bg-slate-200 border-2 border-dashed border-slate-300 rounded-2xl h-48 flex flex-col items-center justify-center text-slate-500 overflow-hidden">
@@ -167,7 +152,6 @@
                 <span class="text-xs opacity-70 mt-1" x-text="'(Ref: ' + activeModule?.title + ')'"></span>
             </div>
 
-            <!-- Lista de Tarefas -->
             <div class="space-y-3">
                 <template x-for="item in activeModule?.items" :key="item.id">
                     <div @click="toggleCheck(item.id)" 
@@ -191,7 +175,6 @@
             </div>
         </div>
 
-        <!-- Botão Flutuante de Voltar -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto">
                 <button @click="closeModule()"
@@ -204,7 +187,6 @@
         </div>
     </div>
 
-    <!-- Lógica do App (Alpine) -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
