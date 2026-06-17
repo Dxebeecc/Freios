@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Setup LATAM - Freios (Módulos)</title>
     
+    <!-- Vacina Anti-Cache (Força o telemóvel/PC a ler a versão nova) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>Setup LATAM - Freios (Módulos)</title>
-    
+    <!-- Tailwind CSS para o aspeto visual -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Alpine.js (O motor do App) - AGORA CHAMADO APENAS UMA VEZ -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <style>
-        /* Impede que o conteúdo sem renderização apareça antes do carregamento do Alpine */
+        /* Proteção contra carregamento feio */
         [x-cloak] { display: none !important; }
     </style>
 
+    <!-- LÓGICA DO APLICATIVO (MÉTODO GLOBAL BLINDADO CONTRA TELA BRANCA) -->
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('appData', () => ({
+        function appData() {
+            return {
                 screen: 'home',
                 model: null,
                 cycle: null,
@@ -158,7 +163,7 @@
                             id: 'ph_b_insulator', 
                             text: 'Remover o "insulator assembly" (1-100) de cada pistão usando a ferramenta F27701000. CUIDADO: Não usar ferramentas afiadas.',
                             reference: {
-                                imgUrl: 'https://i.imgur.com/reDKB9A.jpg',
+                                imgUrl: 'https://i.imgur.com/reDKB9A.jpeg',
                                 manualPage: 'Page 3009 / CMM 32-49-60',
                                 toolCode: 'Tool F27701000'
                             }
@@ -169,7 +174,7 @@
                             id: 'ph_b_sleeve', 
                             text: 'Desrosquear e remover as canecas (Return Piston Assemblies 1-090) utilizando a ferramenta especial R47166.',
                             reference: {
-                                imgUrl: 'https://i.imgur.com/w9Fjg8u.jpg',
+                                imgUrl: 'https://i.imgur.com/w9Fjg8u.jpeg',
                                 manualPage: 'Page 3009 / CMM 32-49-60',
                                 toolCode: 'Tool R47166'
                             }
@@ -187,7 +192,7 @@
                             text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163 sobre o guia da mola para comprimir a mola (1-200) até acessar o "second groove" do pistão. Em seguida, remover o retaining ring (1-170) com o alicate adequado (Q46498).',
                             highlight: 'info',
                             reference: {
-                                imgUrl: 'https://i.imgur.com/n85AF4P.jpg',
+                                imgUrl: 'https://i.imgur.com/n85AF4P.jpeg',
                                 manualPage: 'Page 3010 / CMM 32-49-60',
                                 toolCode: 'Tool R47163 / Q46498'
                             }
@@ -197,13 +202,13 @@
                         // Lógica A320/A321
                         pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
                         
-                        // Passo de Remoção das Canecas adicionado para A32X
+                        // Passo de Remoção das Canecas adicionado para A32X (Genérico aguardando foto)
                         pistonHouseItems.push({ 
                             id: 'desm_sleeve_a32x', 
                             text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial correspondente.', 
                             highlight: 'info',
                             reference: {
-                                imgUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400', 
+                                imgUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
                                 manualPage: 'CMM Ref (Aguardando)',
                                 toolCode: 'Tool (Aguardando Código/Foto)'
                             }
@@ -269,14 +274,13 @@
 
                     return stepsData[this.step] || [];
                 }
-            }));
-        });
+            };
+        }
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen" x-data="appData()">
 
+    <!-- ECRÃ 1: INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col">
             <div class="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
@@ -322,6 +326,7 @@
         </div>
     </div>
 
+    <!-- ECRÃ 2: LISTA DE MÓDULOS -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative shadow-2xl">
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
@@ -399,6 +404,7 @@
         </div>
     </div>
 
+    <!-- ECRÃ 3: SUB-ABA -->
     <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative shadow-2xl">
         <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-slate-200">
             <div class="flex items-center gap-4">
@@ -412,7 +418,7 @@
             </div>
         </div>
 
-        <div class="flex-1 p-4 pb-28 overflow-y-auto space-y-4">
+        <div class="flex-1 p-4 pb-32 overflow-y-auto space-y-4">
             <template x-for="item in (activeModule?.items || [])" :key="item.id">
                 <div :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm'))"
                      class="p-4 rounded-xl border-2 flex gap-4 items-start transition-all duration-200">
@@ -429,6 +435,7 @@
                             <span x-text="item.text"></span>
                         </p>
 
+                        <!-- BOTÃO DE SUPORTE VISUAL TÉCNICO -->
                         <template x-if="item.reference">
                             <button @click="openModalImage(item.reference)" class="w-fit flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors mt-1">
                                 <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -452,6 +459,7 @@
         </div>
     </div>
 
+    <!-- JANELA FLUTUANTE (MODAL INTERATIVO POKA-YOKE) -->
     <div x-show="modalOpen" x-cloak class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300" @click.self="closeModalImage()">
         <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
             <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
@@ -483,5 +491,6 @@
             </div>
         </div>
     </div>
+
 </body>
 </html>
