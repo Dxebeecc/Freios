@@ -2,29 +2,21 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup LATAM - Freios (Módulos)</title>
     
-    <!-- Vacina Anti-Cache (Força o telemóvel/PC a ler a versão nova) -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
-    <!-- Tailwind CSS para o aspeto visual -->
+    <!-- Tailwind CSS (O responsável pelo Design - O iPhone tem de carregar isto) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Alpine.js (O motor do App) - AGORA CHAMADO APENAS UMA VEZ -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <style>
-        /* Proteção contra carregamento feio */
+        /* Proteção para o ecrã não piscar antes de carregar */
         [x-cloak] { display: none !important; }
     </style>
 
-    <!-- LÓGICA DO APLICATIVO (MÉTODO GLOBAL BLINDADO CONTRA TELA BRANCA) -->
+    <!-- Lógica da Aplicação (Carregada antes para não dar ecrã branco) -->
     <script>
-        function appData() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('appData', () => ({
                 screen: 'home',
                 model: null,
                 cycle: null,
@@ -202,7 +194,7 @@
                         // Lógica A320/A321
                         pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
                         
-                        // Passo de Remoção das Canecas adicionado para A32X (Genérico aguardando foto)
+                        // Passo de Remoção das Canecas adicionado para A32X
                         pistonHouseItems.push({ 
                             id: 'desm_sleeve_a32x', 
                             text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial correspondente.', 
@@ -274,9 +266,12 @@
 
                     return stepsData[this.step] || [];
                 }
-            };
-        }
+            }));
+        });
     </script>
+    
+    <!-- Alpine.js (O Motor Principal do App) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen" x-data="appData()">
 
