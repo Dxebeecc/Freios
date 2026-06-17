@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup LATAM - Freios (Módulos)</title>
+    <!-- Tailwind CSS para o visual -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js para a lógica do App -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased" x-data="appData()">
 
+    <!-- TELA 1: INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col">
+            <!-- Header -->
             <div class="bg-red-600 p-8 text-white text-center rounded-b-[2.5rem] shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-90"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.6L3 8l5 5-3 3-3-1-1 1 2.5 4.5L11 23l1-1-1-3 3-3 5 5 1.2-.7c.4-.2.7-.6.6-1.1z"/></svg>
                 <h1 class="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
@@ -21,6 +25,7 @@
             </div>
 
             <div class="flex-1 p-6 flex flex-col justify-center space-y-8">
+                <!-- Seleção de Modelo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
                     <div class="grid grid-cols-2 gap-3">
@@ -32,6 +37,7 @@
                     </div>
                 </div>
 
+                <!-- Seleção de Ciclo -->
                 <div>
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
                     <div class="grid grid-cols-4 gap-3">
@@ -47,6 +53,7 @@
                     </div>
                 </div>
 
+                <!-- Iniciar -->
                 <button @click="startApp()" :disabled="!model || !cycle"
                     :class="(model && cycle) ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95' : 'bg-slate-100 text-slate-300 cursor-not-allowed'"
                     class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300">
@@ -57,7 +64,9 @@
         </div>
     </div>
 
+    <!-- TELA 2: LISTA DE MÓDULOS (MENU DA ETAPA) -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
+        <!-- Header Fixo da Etapa -->
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
                 <button @click="screen = 'home'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition active:scale-90">
@@ -72,6 +81,7 @@
                 <div class="w-9"></div>
             </div>
 
+            <!-- Progress Bar -->
             <div class="flex justify-between relative px-4">
                 <div class="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 -z-10 -translate-y-1/2 rounded-full"></div>
                 <template x-for="(name, index) in stepNames">
@@ -87,6 +97,7 @@
             <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-950/50 py-1.5 mx-auto max-w-[200px] rounded-full" x-text="stepNames[step]"></div>
         </div>
 
+        <!-- Módulos como Botões Gigantes -->
         <div class="flex-1 p-5 pb-28 overflow-y-auto">
             <p class="text-slate-500 text-sm font-semibold mb-4 text-center">Selecione a operação para visualizar os detalhes:</p>
             <div class="space-y-4">
@@ -109,6 +120,7 @@
             </div>
         </div>
 
+        <!-- Navegação Inferior (Rodapé Principal) -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto flex justify-between gap-4">
                 <button @click="step = Math.max(0, step - 1)" :disabled="step === 0"
@@ -134,7 +146,9 @@
         </div>
     </div>
 
+    <!-- TELA 3: SUB-ABA (DETALHES DA OPERAÇÃO) -->
     <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-slate-50 relative">
+        <!-- Header da Sub-Aba -->
         <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-slate-200">
             <div class="flex items-center gap-4">
                 <button @click="closeModule()" class="p-2 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition active:scale-90">
@@ -147,16 +161,19 @@
             </div>
         </div>
 
+        <!-- Conteúdo da Sub-Aba (Apenas a lista de itens, sem os blocos grandes cinzas) -->
         <div class="flex-1 p-4 pb-28 overflow-y-auto space-y-4">
             <template x-for="item in activeModule?.items" :key="item.id">
                 <div :class="checked[item.id] ? 'bg-emerald-50 border-emerald-500 scale-[0.99] opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50/80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50/80 border-blue-300 shadow-sm' : 'bg-white border-slate-200 shadow-sm'))"
                      class="p-4 rounded-xl border-2 flex gap-4 items-start transition-all duration-200">
                     
+                    <!-- Checkbox clickável dedicado -->
                     <div @click="toggleCheck(item.id)" :class="checked[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-slate-50'"
                          class="mt-0.5 shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors cursor-pointer">
                         <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
                     </div>
 
+                    <!-- Texto e Botão da Referência Técnica -->
                     <div class="flex-1 pt-0.5 flex flex-col gap-2">
                         <p :class="checked[item.id] ? 'text-slate-500 line-through' : 'text-slate-800 font-semibold'" class="text-sm leading-snug">
                             <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
@@ -164,6 +181,7 @@
                             <span x-text="item.text"></span>
                         </p>
 
+                        <!-- BOTÃO DE SUPORTE VISUAL TÉCNICO -->
                         <template x-if="item.reference">
                             <button @click="openModalImage(item.reference)" class="w-fit flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors mt-1">
                                 <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -175,6 +193,7 @@
             </template>
         </div>
 
+        <!-- Botão Flutuante de Voltar -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-6 shadow-[0_-15px_40px_rgba(0,0,0,0.08)] z-20">
             <div class="max-w-md mx-auto">
                 <button @click="closeModule()"
@@ -187,8 +206,10 @@
         </div>
     </div>
 
+    <!-- JANELA FLUTUANTE (MODAL DE REFERÊNCIA OPERACIONAL POKA YOKE) -->
     <div x-show="modalOpen" x-cloak class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300" @click.self="closeModalImage()">
         <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+            <!-- Header do Modal -->
             <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -198,9 +219,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
+            <!-- Corpo / Imagem -->
             <div class="flex-1 overflow-y-auto p-4 bg-slate-50 flex flex-col items-center justify-center min-h-[200px]">
                 <img :src="modalData.imgUrl" class="max-w-full max-h-[40vh] object-contain rounded-xl shadow-inner border border-slate-200 bg-white" alt="Referência">
             </div>
+            <!-- Rodapé Técnico com Rastreabilidade -->
             <div class="bg-white p-4 border-t border-slate-100 space-y-2">
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
@@ -219,6 +242,7 @@
         </div>
     </div>
 
+    <!-- Lógica do App (Alpine) -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
@@ -326,7 +350,6 @@
                     // --- ETAPA 1: DESMONTAGEM ---
                     let drenagemItems = [];
                     if (isB777) {
-                        // Exemplo Prático com as Imagens/Páginas que enviou no print
                         drenagemItems.push({ 
                             id: 'dren_b1', 
                             text: 'Retirar o parafuso e a arruela da conexão de dreno.',
@@ -370,13 +393,14 @@
 
                     let pistonHouseItems = [];
                     if (isB777) {
+                        // ---> AQUI ESTÁ A SUA IMAGEM DA FERRAMENTA F27701000 <---
                         pistonHouseItems.push({ 
                             id: 'ph_b1', 
                             text: 'Separar ferramental listado: Soquetes 12-pt (5/16" e 11/16"), dispositivos R47956/F27701000 (remover insulators), R47166 (spanner return), R47163 (molas), espátula e pick plástico T48221.',
                             reference: {
-                                imgUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400', // Imagem representativa
+                                imgUrl: 'https://i.imgur.com/reDKB9A.jpg', // SUA IMAGEM DO IMGUR
                                 manualPage: 'Page 3001 / List of Tools',
-                                toolCode: 'F27701000 / R47166 / R47163'
+                                toolCode: 'Tool F27701000 / R47956'
                             }
                         });
                         if (isOverhaul) {
