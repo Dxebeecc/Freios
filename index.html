@@ -2,10 +2,10 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Setup LATAM - Freios (Módulos)</title>
     
-    <!-- Tailwind CSS (O responsável pelo Design - O iPhone tem de carregar isto) -->
+    <!-- Tailwind CSS (O responsável pelo Design) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -13,7 +13,7 @@
         [x-cloak] { display: none !important; }
     </style>
 
-    <!-- Lógica da Aplicação (Carregada antes para não dar ecrã branco) -->
+    <!-- Lógica da Aplicação -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
@@ -77,12 +77,20 @@
                     return module.items.every(item => this.checked[item.id]);
                 },
 
+                // Verificação BLINDADA para qualquer Safari antigo (usando Loop For clássico)
                 isStepComplete() {
                     const modules = this.currentModules();
                     if(!modules || modules.length === 0) return false;
                     
-                    const allItems = modules.reduce((acc, mod) => acc.concat(mod.items || []), []);
-                    return allItems.every(item => this.checked[item.id]);
+                    for (let i = 0; i < modules.length; i++) {
+                        const items = modules[i].items || [];
+                        for (let j = 0; j < items.length; j++) {
+                            if (!this.checked[items[j].id]) {
+                                return false; // Se achar um desmarcado, já retorna falso
+                            }
+                        }
+                    }
+                    return true;
                 },
 
                 getStepIcon(index) {
@@ -150,7 +158,6 @@
                     if (isB777) {
                         pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO DE SEGURANÇA: Não empurrar os pistões (1-240) para dentro das camisas enquanto instalados, pode causar espirro de fluido hidráulico.', highlight: 'alert' });
                         
-                        // Ferramenta F27701000
                         pistonHouseItems.push({ 
                             id: 'ph_b_insulator', 
                             text: 'Remover o "insulator assembly" (1-100) de cada pistão usando a ferramenta F27701000. CUIDADO: Não usar ferramentas afiadas.',
@@ -161,7 +168,6 @@
                             }
                         });
                         
-                        // Ferramenta R47166 (Desmontagem das Canecas)
                         pistonHouseItems.push({ 
                             id: 'ph_b_sleeve', 
                             text: 'Desrosquear e remover as canecas (Return Piston Assemblies 1-090) utilizando a ferramenta especial R47166.',
@@ -178,7 +184,6 @@
 
                         pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE (Poka-Yoke): Descartar permanentemente TODOS os anéis de vedação e partes internas do pistão no lixo em qualquer ciclo (1º ao 4º).', highlight: 'alert' });
 
-                        // Ferramenta R47163 (Compressão da Mola e Alicate Q46498)
                         pistonHouseItems.push({ 
                             id: 'ph_b_spring', 
                             text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163 sobre o guia da mola para comprimir a mola (1-200) até acessar o "second groove" do pistão. Em seguida, remover o retaining ring (1-170) com o alicate adequado (Q46498).',
@@ -194,7 +199,6 @@
                         // Lógica A320/A321
                         pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
                         
-                        // Passo de Remoção das Canecas adicionado para A32X
                         pistonHouseItems.push({ 
                             id: 'desm_sleeve_a32x', 
                             text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial correspondente.', 
@@ -270,7 +274,7 @@
         });
     </script>
     
-    <!-- Alpine.js (O Motor Principal do App) -->
+    <!-- Alpine.js (O Motor Principal do App) - CARREGADO DEPOIS -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen" x-data="appData()">
