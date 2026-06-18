@@ -130,8 +130,29 @@
                     if (isB777) {
                         drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável e perigoso.', highlight: 'alert' });
                         drenagemItems.push({ id: 'dren_b2', text: 'Desapertar e remover o parafuso (1-350) e a anilha de sangria (1-360).' });
-                        drenagemItems.push({ id: 'dren_b3', text: 'Conectar a mangueira de dreno (ponta fina) e abaixar as canelas dos 6 pistões. Dica: Girar no sentido horário e bater levemente na lateral.', highlight: 'info' });
-                        drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380) com torque de 6,8 N.m (60.19 lbf.in).', highlight: 'alert' });
+                        
+                        // Passo Novo: Drenagem com ou sem remoção da Conexão Hidráulica (Condicional para Overhaul)
+                        if (isOverhaul) {
+                            drenagemItems.push({ 
+                                id: 'dren_b3_ovh', 
+                                text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting) para drenagem completa e inspeção.', 
+                                highlight: 'info',
+                                reference: {
+                                    imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg',
+                                    manualPage: 'CMM Ref (Verificar CMM)',
+                                    toolCode: 'Conexão Hidráulica B777'
+                                }
+                            });
+                            drenagemItems.push({ id: 'dren_b4_ovh', text: 'Conectar a mangueira de dreno (ponta fina) na porta principal e abaixar as canelas dos 6 pistões. Dica: Girar no sentido horário e bater levemente na lateral.', highlight: 'info' });
+                        } else {
+                            drenagemItems.push({ 
+                                id: 'dren_b3', 
+                                text: 'Conectar a mangueira de dreno (ponta fina) na válvula de sangria e abaixar as canelas dos 6 pistões. Dica: Girar no sentido horário e bater levemente na lateral.', 
+                                highlight: 'info'
+                            });
+                        }
+                        
+                        drenagemItems.push({ id: 'dren_b5', text: 'Após drenar, apertar o parafuso de sangria (1-380) com torque de 6,8 N.m (60.19 lbf.in).', highlight: 'alert' });
                     } else {
                         drenagemItems.push({ id: 'dren_1', text: 'Posicionar o recipiente adequado abaixo do conjunto para contenção.', highlight: 'info' });
                         drenagemItems.push({ id: 'dren_2', text: 'Drenar todo o fluido hidráulico do componente antes de soltar os parafusos estruturais.' });
@@ -157,18 +178,6 @@
                     if (isB777) {
                         pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO DE SEGURANÇA: Não empurrar os pistões (1-240) para dentro das camisas enquanto instalados, pode causar espirro de fluido hidráulico.', highlight: 'alert' });
                         
-                        // Passo Novo: Conexão Hidráulica B777
-                        pistonHouseItems.push({ 
-                            id: 'ph_b_conexao', 
-                            text: 'Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting).',
-                            highlight: 'info',
-                            reference: {
-                                imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg',
-                                manualPage: 'CMM Ref (Verificar CMM)',
-                                toolCode: 'Conexão Hidráulica B777'
-                            }
-                        });
-
                         pistonHouseItems.push({ 
                             id: 'ph_b_insulator', 
                             text: 'Remover o "insulator assembly" (1-100) de cada pistão usando a ferramenta F27701000. CUIDADO: Não usar ferramentas afiadas.',
@@ -190,7 +199,7 @@
                         });
 
                         if (isOverhaul) {
-                            pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa do alojamento. Alerta crítico: Remover todas as conexões e preservar a placa de identificação.', highlight: 'alert' });
+                            pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa do alojamento. Alerta crítico: Remover todas as conexões (se ainda instaladas) e preservar a placa de identificação.', highlight: 'alert' });
                         }
 
                         pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE (Poka-Yoke): Descartar permanentemente TODOS os anéis de vedação e partes internas do pistão no lixo em qualquer ciclo (1º ao 4º).', highlight: 'alert' });
@@ -207,7 +216,7 @@
                         });
 
                     } else {
-                        // Passo Novo: Conexão Hidráulica Genérica A320/A321
+                        // Passo Genérico para A32X aguardando foto
                         pistonHouseItems.push({ 
                             id: 'ph_a32x_conexao', 
                             text: 'Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting). (Aguardando imagem específica do modelo).',
