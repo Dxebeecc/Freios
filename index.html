@@ -34,7 +34,7 @@
                 activeTool: null,
                 toolsList: [
                     {
-                        name: 'Adaptor (Canecas)',
+                        name: 'Adaptor (Canecas e Drenagem)',
                         code: 'Q47963-T',
                         image: 'https://i.imgur.com/UOUvSSN.jpeg',
                         locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 5 (Comp. Superior)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Comp. Superior)', 'Caixa 8 (Gaveta 3)', 'Caixa 9 (Comp. Superior)']
@@ -348,7 +348,6 @@
 
                         pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
                         
-                        // CHECK ATUALIZADO COM AS DUAS REFERÊNCIAS
                         pistonHouseItems.push({ 
                             id: 'desm_sleeve_a32x', 
                             text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial Adaptador (Q47963).', 
@@ -399,18 +398,72 @@
                         { id: 'mod_piston', title: 'Piston House', items: pistonHouseItems }
                     ];
 
-                    // --- ETAPA 2: DOCUMENTAÇÃO ---
+                    // --- ETAPA 2: DOCUMENTAÇÃO (ATUALIZADA COM REFERÊNCIAS) ---
                     stepsData[2] = [
                         {
                             id: 'doc_mod',
                             title: 'Formulários e Fitas',
                             items: [
-                                { id: 'doc_1', text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE legível e o S/N no invólucro plástico protetor.' },
-                                { id: 'doc_2', text: 'Repair Request (Campo Oficina): Preencher com "QSCMY63 - Oficina Limpeza Técnica".' },
-                                { id: 'doc_3', text: 'Repair Request (Instrução Operacional): Escrever: "Perform the cleaning IAW-IT-CPQ-004".' },
-                                { id: 'doc_4', text: 'Repair Request (Plaqueta de Identificação): Registrar a frase padrão: "Identification Plate: IN".' },
-                                { id: 'doc_5', text: `Component Restoration Form (Histórico): Informar com precisão o NUMBER of cycles (${this.cycle}).` },
-                                { id: 'doc_6', text: 'Component Restoration Form (Remarks): Adicionar: "This component was disassembled IAW page 3001 to 3012".' },
+                                { 
+                                    id: 'doc_1', 
+                                    text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE legível e o S/N no invólucro plástico protetor.',
+                                    reference: {
+                                        btnText: 'Ref. Capa (Fita Verde)',
+                                        imgUrl: 'https://i.imgur.com/QQl6foO.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Repair Request (Capa)'
+                                    }
+                                },
+                                { 
+                                    id: 'doc_2', 
+                                    text: 'Repair Request (Campo Oficina): Preencher com "QSCMY63 - Oficina Limpeza Técnica".',
+                                    reference: {
+                                        btnText: 'Ref. Campo Oficina',
+                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Repair Request (Infos)'
+                                    }
+                                },
+                                { 
+                                    id: 'doc_3', 
+                                    text: 'Repair Request (Instrução Operacional): Escrever: "Perform the cleaning IAW-IT-CPQ-004".',
+                                    reference: {
+                                        btnText: 'Ref. Instrução',
+                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Repair Request (Infos)'
+                                    }
+                                },
+                                { 
+                                    id: 'doc_4', 
+                                    text: 'Repair Request (Plaqueta de Identificação): Registrar a frase padrão: "Identification Plate: IN".',
+                                    reference: {
+                                        btnText: 'Ref. Plaqueta',
+                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Repair Request (Infos)'
+                                    }
+                                },
+                                { 
+                                    id: 'doc_5', 
+                                    text: `Component Restoration Form (Histórico): Informar com precisão o NUMBER of cycles (${this.cycle}).`,
+                                    reference: {
+                                        btnText: 'Ref. Ciclos',
+                                        imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Component Restoration Form'
+                                    }
+                                },
+                                { 
+                                    id: 'doc_6', 
+                                    text: 'Component Restoration Form (Remarks): Adicionar: "This component was disassembled IAW page 3001 to 3012".',
+                                    reference: {
+                                        btnText: 'Ref. Remarks',
+                                        imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg',
+                                        manualPage: 'Procedimento Interno',
+                                        toolCode: 'Component Restoration Form'
+                                    }
+                                },
                                 { id: 'doc_7', text: 'Fechamento de Laudo: Aplicar carimbo (LATAM-6022470 Wellington), preencher data corrente e lançar rubrica.' },
                                 { id: 'doc_8', text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal do responsável escalado para o despacho.', highlight: 'alert' }
                             ]
