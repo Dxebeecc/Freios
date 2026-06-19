@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Setup LATAM - Freios (Módulos)</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -12,8 +13,10 @@
         [x-cloak] { display: none !important; }
     </style>
 
+    <!-- Alpine.js (O Motor Principal) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
+    <!-- LÓGICA DO APP -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
@@ -405,6 +408,9 @@
                     ];
 
                     // --- ETAPA 2: DOCUMENTAÇÃO ---
+                    let reqInstructionText = isOverhaul ? 'Perform the cleaning IAW-IT-CPQ-004 And remove painting IAW-IT-CPQ-007' : 'Perform the cleaning IAW-IT-CPQ-004';
+                    let restoreRemarksText = isOverhaul ? 'This component was disassembled IAW page 3001 to 3012 And remove painting IAW-IT-CPQ-007' : 'This component was disassembled IAW page 3001 to 3012';
+
                     stepsData[2] = [
                         {
                             id: 'doc_mod',
@@ -432,7 +438,7 @@
                                 },
                                 { 
                                     id: 'doc_3', 
-                                    text: 'Repair Request (Instrução Operacional): Escrever: "Perform the cleaning IAW-IT-CPQ-004".',
+                                    text: `Repair Request (Instrução Operacional): Escrever: "${reqInstructionText}".`,
                                     reference: {
                                         btnText: 'Ref. Instrução',
                                         imgUrl: 'https://i.imgur.com/X6gvu78.jpeg',
@@ -462,7 +468,7 @@
                                 },
                                 { 
                                     id: 'doc_6', 
-                                    text: 'Component Restoration Form (Remarks): Adicionar: "This component was disassembled IAW page 3001 to 3012".',
+                                    text: `Component Restoration Form (Remarks): Adicionar: "${restoreRemarksText}".`,
                                     reference: {
                                         btnText: 'Ref. Remarks',
                                         imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg',
@@ -519,9 +525,11 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen" x-data="appData">
 
+    <!-- TELA 1: INICIAL (HOME) -->
     <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
         <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col">
             <div class="bg-red-600 p-8 text-white text-center rounded-b-3xl shadow-lg relative">
+                <!-- Botão para a Galeria -->
                 <button @click="openGallery()" class="absolute top-6 right-6 p-2 bg-white/20 hover:bg-white/30 rounded-full transition" title="Acervo de Ferramentas">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                 </button>
@@ -568,6 +576,7 @@
         </div>
     </div>
 
+    <!-- TELA NOVA: GALERIA DE FERRAMENTAS -->
     <div x-show="screen === 'gallery'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center gap-4 mb-4">
@@ -579,6 +588,7 @@
                     <p class="text-blue-200 text-xs uppercase tracking-widest font-semibold mt-1">Consulta e Localização</p>
                 </div>
             </div>
+            <!-- Barra de Pesquisa -->
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg class="w-4 h-4 text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
@@ -613,6 +623,7 @@
         </div>
     </div>
 
+    <!-- TELA 2: LISTA DE MÓDULOS -->
     <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
         <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
             <div class="flex items-center justify-between mb-6">
@@ -690,6 +701,7 @@
         </div>
     </div>
 
+    <!-- ECRÃ 3: SUB-ABA (MÓDULOS DOS CHECKS) -->
     <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
         <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-gray-200">
             <div class="flex items-center gap-4">
@@ -720,6 +732,7 @@
                             <span x-text="item.text"></span>
                         </p>
 
+                        <!-- ÁREA DE BOTÕES DE REFERÊNCIA VISUAL -->
                         <div class="flex flex-wrap gap-2 mt-1">
                             <template x-if="item.reference">
                                 <button @click="openModalImage(item.reference)" class="w-auto inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors self-start">
@@ -751,6 +764,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE REFERÊNCIA (IMAGENS DOS CHECKS) -->
     <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300" style="background-color: rgba(15, 23, 42, 0.8);" @click.self="closeModalImage()">
         <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col" style="max-height: 85vh;">
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center">
@@ -769,11 +783,11 @@
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
                         <p class="text-gray-400 font-bold uppercase tracking-wider" style="font-size: 9px;">Manual Ref.</p>
-                        <p class="text-gray-800 font-bold mt-0.5 truncate" x-text="modalData.manualPage"></p>
+                        <p class="text-gray-800 font-bold mt-0.5 leading-snug break-words" x-text="modalData.manualPage"></p>
                     </div>
                     <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200">
                         <p class="text-blue-500 font-bold uppercase tracking-wider" style="font-size: 9px;">CMM Tool / Part</p>
-                        <p class="text-blue-900 font-black mt-0.5 truncate" x-text="modalData.toolCode"></p>
+                        <p class="text-blue-900 font-black mt-0.5 leading-snug break-words" x-text="modalData.toolCode"></p>
                     </div>
                 </div>
                 <button @click="closeModalImage()" class="w-full py-3 mt-2 bg-blue-900 text-white font-bold text-sm rounded-xl hover:bg-blue-800 transition">
@@ -783,6 +797,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE LOCALIZAÇÃO (PÁGINA DA GALERIA) -->
     <div x-show="locModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300" style="background-color: rgba(15, 23, 42, 0.8);" @click.self="closeLocationModal()">
         <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col">
             <div class="bg-orange-500 text-white p-5 flex justify-between items-center">
