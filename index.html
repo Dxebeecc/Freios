@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Setup LATAM - Freios (Módulos)</title>
+    <title>Setup LATAM - Freios</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
         [x-cloak] { display: none !important; }
+        /* Suaviza a rolagem */
+        html { scroll-behavior: smooth; }
     </style>
 
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('appData', () => ({
-                screen: 'home',
-                model: null,
-                cycle: null,
+                screen: 'home', // home, checklist, module, gallery
+                model: '',
+                cycle: '',
                 step: 0,
                 activeModule: null, 
                 checked: {},
                 stepNames: ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'],
                 
+                // Modal de Apoio Visual
                 modalOpen: false,
-                modalData: { imgUrl: '', manualPage: '', toolCode: '' },
+                modalData: { imgUrl: '', manualPage: '', toolCode: '', title: '' },
 
+                // Modal de Localização / Galeria
                 searchQuery: '',
                 locModalOpen: false,
                 activeTool: null,
+                
                 toolsList: [
-                    { name: 'Adaptor (Canecas e Drenagem)', code: 'Q47963-T', image: 'https://i.imgur.com/UOUvSSN.jpeg', locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 5 (Comp. Superior)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Comp. Superior)', 'Caixa 8 (Gaveta 3)', 'Caixa 9 (Comp. Superior)'] },
+                    { name: 'Adaptor (Canecas e Drenagem)', code: 'Q47963-T', image: 'https://i.imgur.com/UOUvSSN.jpeg', locations: ['Caixa 1 (Comp. Superior)', 'Caixa 8 (Gaveta 3)'] },
                     { name: 'Spanner (Canecas B777)', code: 'R47166', image: 'https://i.imgur.com/w9Fjg8u.jpeg', locations: ['Carro 2 (Gaveta A)'] },
                     { name: 'Tool (Insulator Assy B777)', code: 'F27701000-T', image: 'https://i.imgur.com/reDKB9A.jpeg', locations: ['Carro 1 (Gaveta D)'] },
-                    { name: 'Spring Removal/Install (B777)', code: 'R47163', image: 'https://i.imgur.com/n85AF4P.jpeg', locations: ['Carro 1 (Gaveta D)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta E)', 'Carro 10 (Gaveta A)'] },
-                    { name: 'Compression Tool (A320)', code: 'F26693000-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 4 (Gaveta 2)', 'Caixa 5 (Comp. Superior)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Gaveta 1)', 'Caixa 8 (Comp. Superior)', 'Caixa 9 (Gaveta 2)'] },
-                    { name: 'Spatula (Espátula)', code: '89901-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 4 (Gaveta 2)', 'Caixa 5 (Comp. Superior)', 'Carro 10 (Gaveta B)'] },
-                    { name: 'Installation Cone 1', code: 'Q47964-1-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Caixa 1 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 4 (Gaveta 2)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Gaveta 1)', 'Caixa 8 (Comp. Superior)', 'Caixa 9 (Gaveta 1)', 'Carro 8 (Gaveta C)'] },
-                    { name: 'Installation Cone 2', code: 'Q47965-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Caixa 1 (Gaveta 1)', 'Caixa 3 (Gaveta 1)', 'Caixa 4 (Gaveta 2)', 'Caixa 6 (Gaveta 2)', 'Caixa 7 (Gaveta 1)', 'Caixa 8 (Comp. Superior)', 'Caixa 9 (Gaveta 1)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta C)'] },
-                    { name: 'Compression Tool (A321)', code: 'Q46498-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Carro 1 (Gaveta D)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta F)', 'Carro 10 (Gaveta A)'] },
-                    { name: 'Riveting Tool (A320)', code: 'AC21826000-1-T', image: 'COLE_O_LINK_DO_IMGUR_AQUI', locations: ['Carro 2 (Em Cima)', 'Carro 10 (Gaveta A)'] }
+                    { name: 'Spring Removal/Install (B777)', code: 'R47163', image: 'https://i.imgur.com/n85AF4P.jpeg', locations: ['Carro 1 (Gaveta D)', 'Carro 8 (Gaveta E)'] },
+                    { name: 'Compression Tool (A320)', code: 'F26693000-T', image: 'https://i.imgur.com/reDKB9A.jpeg', locations: ['Caixa 4 (Gaveta 2)', 'Caixa 7 (Gaveta 1)'] }
                 ],
 
                 get filteredTools() {
@@ -52,10 +49,16 @@
                 },
 
                 openLocationModalByCode(code) {
-                    const tool = this.toolsList.find(t => t.code === code);
+                    if (!code) return;
+                    // Limpa o código para buscar apenas a base (ex: remove o -T)
+                    const cleanCode = code.replace('-T', '').split(' / ')[0].trim().toLowerCase();
+                    const tool = this.toolsList.find(t => t.code.toLowerCase().includes(cleanCode));
+                    
                     if (tool) {
                         this.activeTool = tool;
                         this.locModalOpen = true;
+                    } else {
+                        alert("Localização física ainda não cadastrada para esta ferramenta.");
                     }
                 },
 
@@ -68,36 +71,445 @@
                     this.locModalOpen = false;
                     this.activeTool = null;
                 },
+
+                startApp() { 
+                    if(this.model && this.cycle) { 
+                        this.screen = 'checklist'; 
+                        this.step = 0; 
+                        this.checked = {}; 
+                        window.scrollTo(0, 0); 
+                    } 
+                },
                 
-                // ... (restante das funções mantidas) ...
-                startApp() { if(this.model && this.cycle) { this.screen = 'checklist'; this.step = 0; this.checked = {}; window.scrollTo(0, 0); } },
-                openGallery() { this.screen = 'gallery'; this.searchQuery = ''; window.scrollTo(0, 0); },
-                finishApp() { if(this.isStepComplete()){ alert("Bancada finalizada!"); this.screen = 'home'; this.model = null; this.cycle = null; window.scrollTo(0, 0); } },
-                openModule(module) { this.activeModule = module; this.screen = 'module'; window.scrollTo(0, 0); },
-                closeModule() { this.activeModule = null; this.screen = 'checklist'; window.scrollTo(0, 0); },
-                toggleCheck(id) { this.checked[id] = !this.checked[id]; },
-                openModalImage(refData) { this.modalData = refData; this.modalOpen = true; },
-                closeModalImage() { this.modalOpen = false; },
-                isModuleComplete(module) { if(!module || !module.items) return false; return module.items.every(item => this.checked[item.id]); },
-                isStepComplete() { const modules = this.currentModules(); if(!modules || modules.length === 0) return false; for (let i = 0; i < modules.length; i++) { const items = modules[i].items || []; for (let j = 0; j < items.length; j++) { if (!this.checked[items[j].id]) return false; } } return true; },
-                getStepIcon(index) { const icons = ['<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>','<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>','<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>','<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>']; return icons[index]; },
-                currentModules() { /* ... LÓGICA MANTIDA ... */ }
+                openGallery() { 
+                    this.screen = 'gallery'; 
+                    this.searchQuery = ''; 
+                    window.scrollTo(0, 0); 
+                },
+                
+                finishApp() { 
+                    if(this.isStepComplete()){ 
+                        alert("Bancada finalizada com sucesso!"); 
+                        this.screen = 'home'; 
+                        this.model = ''; 
+                        this.cycle = ''; 
+                        window.scrollTo(0, 0); 
+                    } 
+                },
+                
+                openModule(module) { 
+                    this.activeModule = module; 
+                    this.screen = 'module'; 
+                    window.scrollTo(0, 0); 
+                },
+                
+                closeModule() { 
+                    this.activeModule = null; 
+                    this.screen = 'checklist'; 
+                    window.scrollTo(0, 0); 
+                },
+                
+                toggleCheck(id) { 
+                    this.checked[id] = !this.checked[id]; 
+                },
+                
+                openModalImage(title, refData) { 
+                    this.modalData = { title: title, ...refData }; 
+                    this.modalOpen = true; 
+                },
+                
+                closeModalImage() { 
+                    this.modalOpen = false; 
+                },
+                
+                isModuleComplete(module) { 
+                    if(!module || !module.items) return false; 
+                    return module.items.every(item => this.checked[item.id]); 
+                },
+                
+                isStepComplete() { 
+                    const modules = this.currentModules(); 
+                    if(!modules || modules.length === 0) return false; 
+                    for (let i = 0; i < modules.length; i++) { 
+                        const items = modules[i].items || []; 
+                        for (let j = 0; j < items.length; j++) { 
+                            if (!this.checked[items[j].id]) return false; 
+                        } 
+                    } 
+                    return true; 
+                },
+                
+                getStepIcon(index) { 
+                    const icons = [
+                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>'
+                    ]; 
+                    return icons[index]; 
+                },
+
+                currentModules() {
+                    // MÓDULOS GERADOS DINAMICAMENTE
+                    let modules = [];
+
+                    if (this.step === 1) { // Desmontagem
+                        modules.push({
+                            id: 'mod_piston',
+                            title: 'Piston Housing',
+                            subtitle: 'Desmontagem e Dreno',
+                            items: [
+                                {
+                                    id: 'piston_1',
+                                    text: 'Utilize EPI adequado (luvas e óculos) antes de iniciar a drenagem do fluido.',
+                                    warning: true
+                                },
+                                {
+                                    id: 'piston_2',
+                                    text: 'Remova os parafusos do conjunto e prepare a ferramenta de compressão.',
+                                    reference: { imgUrl: 'https://i.imgur.com/reDKB9A.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'F27701000-T' }
+                                }
+                            ]
+                        });
+                    }
+
+                    if (this.step === 2) { // Documentação
+                        let docItems = [
+                            { id: 'doc_1', text: 'Preencher formulário de inspeção visual preliminar.' }
+                        ];
+
+                        // REGRA DE NEGÓCIO: Se for 4º Ciclo (Overhaul), adiciona a instrução de remoção de tinta.
+                        if (this.cycle === '4 (Overhaul)') {
+                            docItems.push({
+                                id: 'doc_overhaul',
+                                text: 'INSTRUÇÃO MANDATÓRIA (OVERHAUL): Incluir no Repair Request a instrução de remoção de tinta conforme norma IAW-IT-CPQ-007.',
+                                warning: true
+                            });
+                        }
+
+                        modules.push({
+                            id: 'mod_docs',
+                            title: 'Repair Request',
+                            subtitle: 'Documentação do conjunto',
+                            items: docItems
+                        });
+                    }
+
+                    // Se não houver módulo configurado para o passo, cria um fictício só para a UI não quebrar
+                    if (modules.length === 0) {
+                        modules.push({
+                            id: 'mod_dummy',
+                            title: 'Verificações Gerais',
+                            subtitle: 'Passo ' + this.stepNames[this.step],
+                            items: [ { id: 'dummy_1', text: 'Confirmar conclusão de todas as etapas visuais.' } ]
+                        });
+                    }
+
+                    return modules;
+                }
             }));
         });
     </script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen" x-data="appData">
-    <!-- ... (TELA HOME E GALERIA MANTIDAS) ... -->
 
-    <!-- AJUSTE NO MODAL (DENTRO DO CHECKLIST/MODULE) -->
-    <!-- Adicione este botão dentro do loop de itens, onde estão as referências: -->
-    <template x-if="item.reference && item.reference.toolCode">
-        <button @click="openLocationModalByCode(item.reference.toolCode.replace('-T', '').split(' / ')[0])" 
-            class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full hover:bg-orange-200 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    <!-- ==================== TELA HOME ==================== -->
+    <div x-show="screen === 'home'" x-cloak class="p-6 max-w-md mx-auto min-h-screen flex flex-col justify-center">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black text-blue-900 tracking-tight">LATAM <span class="text-red-600">Setup</span></h1>
+            <p class="text-gray-500 mt-2 font-medium">Guia Operacional de Freios</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Modelo da Aeronave</label>
+                <select x-model="model" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-base rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3.5 transition-colors">
+                    <option value="" disabled>Selecione o modelo...</option>
+                    <option value="A320">Airbus A320</option>
+                    <option value="A320 NEO">Airbus A320 NEO</option>
+                    <option value="A321">Airbus A321</option>
+                    <option value="B777">Boeing 777</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Ciclo de Manutenção</label>
+                <select x-model="cycle" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-base rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3.5 transition-colors">
+                    <option value="" disabled>Selecione o ciclo...</option>
+                    <option value="1">1º Ciclo</option>
+                    <option value="2">2º Ciclo</option>
+                    <option value="3">3º Ciclo</option>
+                    <option value="4 (Overhaul)">4º Ciclo (Overhaul)</option>
+                </select>
+            </div>
+
+            <button @click="startApp()" 
+                    :disabled="!model || !cycle"
+                    :class="(!model || !cycle) ? 'bg-gray-300 text-gray-500' : 'bg-blue-900 text-white shadow-lg shadow-blue-900/30 hover:bg-blue-800'"
+                    class="w-full font-bold rounded-xl text-lg px-5 py-4 text-center transition-all mt-4">
+                Iniciar Bancada
+            </button>
+        </div>
+
+        <button @click="openGallery()" class="mt-8 flex items-center justify-center gap-2 w-full text-blue-900 font-bold p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            Acervo de Ferramentas
         </button>
-    </template>
-    
-    <!-- ... (MODAIS MANTIDOS) ... -->
+    </div>
+
+    <!-- ==================== TELA CHECKLIST (FLUXO PRINCIPAL) ==================== -->
+    <div x-show="screen === 'checklist'" x-cloak class="pb-24 max-w-md mx-auto">
+        <div class="bg-blue-900 text-white p-6 sticky top-0 z-20 shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <button @click="screen = 'home'" class="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="text-right">
+                    <div class="text-sm text-blue-200 font-medium" x-text="model"></div>
+                    <div class="text-xs font-bold bg-blue-800 px-2 py-1 rounded mt-1" x-text="'Ciclo: ' + cycle"></div>
+                </div>
+            </div>
+
+            <!-- Progresso de Etapas (Header) -->
+            <div class="flex justify-between items-center relative">
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-blue-800 -z-10"></div>
+                <template x-for="(name, index) in stepNames" :key="index">
+                    <div class="flex flex-col items-center">
+                        <div @click="step = index" 
+                             :class="step === index ? 'bg-white text-blue-900 ring-4 ring-blue-900/50' : (step > index ? 'bg-blue-400 text-white' : 'bg-blue-900 text-blue-400 border-2 border-blue-800')"
+                             class="w-10 h-10 rounded-full flex items-center justify-center font-bold cursor-pointer transition-all z-10 shadow-sm"
+                             x-html="getStepIcon(index)">
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div class="text-center mt-3 font-bold text-lg tracking-wide uppercase" x-text="stepNames[step]"></div>
+        </div>
+
+        <div class="p-4 space-y-4">
+            <!-- Lista de Módulos da Etapa Atual -->
+            <template x-for="module in currentModules()" :key="module.id">
+                <div @click="openModule(module)" 
+                     class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div :class="isModuleComplete(module) ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'" 
+                             class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
+                            <template x-if="isModuleComplete(module)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            </template>
+                            <template x-if="!isModuleComplete(module)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </template>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg" x-text="module.title"></h3>
+                            <p class="text-sm text-gray-500 font-medium" x-text="module.subtitle"></p>
+                        </div>
+                    </div>
+                    <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+            </template>
+        </div>
+
+        <!-- Botão Flutuante Inferior -->
+        <div class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button @click="step < 3 ? step++ : finishApp()" 
+                    :disabled="!isStepComplete() && step === 3"
+                    :class="(!isStepComplete() && step === 3) ? 'bg-gray-300 text-gray-500' : 'bg-blue-900 text-white shadow-lg hover:bg-blue-800'"
+                    class="w-full font-bold rounded-xl text-lg px-5 py-4 text-center transition-all flex justify-center items-center gap-2">
+                <span x-text="step < 3 ? 'Próxima Etapa' : 'Finalizar Bancada'"></span>
+                <svg x-show="step < 3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                <svg x-show="step === 3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== TELA DO MÓDULO (ITENS DO CHECKLIST) ==================== -->
+    <div x-show="screen === 'module'" x-cloak class="pb-24 max-w-md mx-auto min-h-screen bg-gray-50">
+        <template x-if="activeModule">
+            <div>
+                <div class="bg-white border-b border-gray-200 p-4 sticky top-0 z-20 shadow-sm flex items-center gap-3">
+                    <button @click="closeModule()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <div>
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider" x-text="stepNames[step]"></div>
+                        <h2 class="font-black text-gray-900 text-xl" x-text="activeModule.title"></h2>
+                    </div>
+                </div>
+
+                <div class="p-4 space-y-3">
+                    <template x-for="(item, index) in activeModule.items" :key="item.id">
+                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                            <label class="flex items-start gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="relative flex items-center justify-center mt-0.5">
+                                    <input type="checkbox" :checked="checked[item.id]" @change="toggleCheck(item.id)" class="peer sr-only">
+                                    <div class="w-7 h-7 rounded border-2 border-gray-300 peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-1">
+                                    <!-- Tratamento visual se for item de Warning/Atenção -->
+                                    <p :class="{'text-gray-900': !checked[item.id] && !item.warning, 'text-gray-400 line-through': checked[item.id], 'text-red-600 font-bold': item.warning && !checked[item.id]}" 
+                                       class="text-base leading-snug transition-all" 
+                                       x-text="item.text"></p>
+                                </div>
+                            </label>
+
+                            <!-- Botões de Ação (Apoio Visual e Localização) -->
+                            <template x-if="item.reference">
+                                <div class="px-4 pb-4 flex gap-2">
+                                    <!-- Botão de Referência Visual -->
+                                    <button @click="openModalImage(activeModule.title, item.reference)" 
+                                            class="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2.5 px-3 rounded-lg text-sm font-bold border border-blue-100 hover:bg-blue-100 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <span x-text="'Ref. ' + item.reference.toolCode.split('-')[0]"></span>
+                                    </button>
+
+                                    <!-- NOVO: Botão de Localização da Ferramenta (Pin) -->
+                                    <template x-if="item.reference.toolCode">
+                                        <button @click="openLocationModalByCode(item.reference.toolCode)" 
+                                                class="w-11 h-11 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg border border-orange-200 hover:bg-orange-200 transition-colors shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 p-4">
+                    <button @click="closeModule()" 
+                            class="w-full bg-gray-900 text-white font-bold rounded-xl text-lg px-5 py-4 text-center hover:bg-black transition-colors">
+                        Voltar para Lista
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- ==================== TELA ACERVO DE FERRAMENTAS (GALERIA) ==================== -->
+    <div x-show="screen === 'gallery'" x-cloak class="max-w-md mx-auto min-h-screen bg-gray-50 flex flex-col">
+        <div class="bg-blue-900 text-white p-4 sticky top-0 z-20 shadow-md flex items-center gap-3">
+            <button @click="screen = 'home'" class="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h2 class="font-bold text-lg">Acervo de Ferramentas</h2>
+        </div>
+
+        <div class="p-4 bg-white border-b border-gray-200 sticky top-[68px] z-10">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <input type="text" x-model="searchQuery" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-3" placeholder="Buscar por nome ou Part Number (P/N)...">
+            </div>
+        </div>
+
+        <div class="p-4 space-y-4 flex-1 overflow-y-auto pb-8">
+            <template x-for="tool in filteredTools" :key="tool.code">
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col">
+                    <div class="h-40 bg-gray-100 p-2 flex items-center justify-center">
+                        <img :src="tool.image" class="max-h-full max-w-full object-contain mix-blend-multiply" alt="Tool Image">
+                    </div>
+                    <div class="p-4 border-t border-gray-100 flex justify-between items-center">
+                        <div>
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1" x-text="tool.name"></div>
+                            <div class="text-lg font-black text-blue-900" x-text="tool.code"></div>
+                        </div>
+                        <button @click="openLocationModal(tool)" class="w-12 h-12 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full hover:bg-orange-200 transition-colors shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+            <template x-if="filteredTools.length === 0">
+                <div class="text-center py-10 text-gray-500">
+                    Nenhuma ferramenta encontrada para "<span x-text="searchQuery"></span>".
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL DE APOIO VISUAL ==================== -->
+    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-gray-900/80 backdrop-blur-sm transition-opacity">
+        <div @click.away="closeModalImage()" class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col">
+            <!-- Header Modal -->
+            <div class="bg-gray-900 px-4 py-3 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <svg class="text-blue-400" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    <span class="font-bold text-sm tracking-wide">APOIO VISUAL / TOOL</span>
+                </div>
+                <button @click="closeModalImage()" class="p-1.5 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Imagem -->
+            <div class="bg-gray-100 p-4 flex items-center justify-center min-h-[200px]">
+                <img :src="modalData.imgUrl" class="max-w-full rounded-lg shadow-sm border border-gray-200" alt="Referência">
+            </div>
+
+            <!-- Dados Técnicos (Empilhados Verticalmente) -->
+            <div class="p-5 space-y-3 bg-white">
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Manual Ref.</div>
+                    <div class="text-sm font-bold text-gray-900 break-words" x-text="modalData.manualPage"></div>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
+                    <div class="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1">CMM Tool / Part</div>
+                    <div class="text-sm font-bold text-blue-900 break-words" x-text="modalData.toolCode"></div>
+                </div>
+
+                <button @click="closeModalImage()" class="w-full mt-4 bg-blue-900 text-white font-bold rounded-xl py-3.5 hover:bg-blue-800 transition-colors">
+                    Fechar Referência
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL DE LOCALIZAÇÃO ==================== -->
+    <div x-show="locModalOpen" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/60 backdrop-blur-sm transition-opacity">
+        <div @click.away="closeLocationModal()" class="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-start bg-orange-50">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-orange-200 text-orange-600 flex items-center justify-center flex-shrink-0 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <template x-if="activeTool">
+                        <div>
+                            <h3 class="font-black text-gray-900 text-lg leading-tight" x-text="activeTool.code"></h3>
+                            <p class="text-sm text-gray-600 mt-1" x-text="activeTool.name"></p>
+                        </div>
+                    </template>
+                </div>
+                <button @click="closeLocationModal()" class="p-2 bg-white rounded-full shadow-sm text-gray-500 hover:text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto bg-white">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Localizações Físicas na Oficina</h4>
+                <div class="space-y-2">
+                    <template x-if="activeTool">
+                        <template x-for="loc in activeTool.locations" :key="loc">
+                            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex items-center gap-3">
+                                <svg class="text-orange-500" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                <span class="font-bold text-gray-700 text-sm" x-text="loc"></span>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-100">
+                <button @click="closeLocationModal()" class="w-full bg-gray-100 text-gray-800 font-bold rounded-xl py-3 hover:bg-gray-200 transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
