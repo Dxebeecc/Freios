@@ -34,10 +34,28 @@
                 activeTool: null,
                 toolsList: [
                     {
-                        name: 'Adaptor (Canecas)',
+                        name: 'Adaptor (Canecas e Drenagem)',
                         code: 'Q47963-T',
                         image: 'https://i.imgur.com/UOUvSSN.jpeg',
                         locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 5 (Comp. Superior)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Comp. Superior)', 'Caixa 8 (Gaveta 3)', 'Caixa 9 (Comp. Superior)']
+                    },
+                    {
+                        name: 'Spanner (Canecas B777)',
+                        code: 'R47166',
+                        image: 'https://i.imgur.com/w9Fjg8u.jpeg',
+                        locations: ['Carro 2 (Gaveta A)']
+                    },
+                    {
+                        name: 'Tool (Insulator Assy B777)',
+                        code: 'F27701000-T',
+                        image: 'https://i.imgur.com/reDKB9A.jpeg',
+                        locations: ['Carro 1 (Gaveta D)']
+                    },
+                    {
+                        name: 'Spring Removal/Install (B777)',
+                        code: 'R47163',
+                        image: 'https://i.imgur.com/n85AF4P.jpeg',
+                        locations: ['Carro 1 (Gaveta D)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta E)', 'Carro 10 (Gaveta A)']
                     },
                     {
                         name: 'Compression Tool (A320)',
@@ -70,22 +88,10 @@
                         locations: ['Carro 1 (Gaveta D)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta F)', 'Carro 10 (Gaveta A)']
                     },
                     {
-                        name: 'Spanner (Canecas B777)',
-                        code: 'R47166',
-                        image: 'COLE_O_LINK_DO_IMGUR_AQUI',
-                        locations: ['Carro 2 (Gaveta A)']
-                    },
-                    {
                         name: 'Riveting Tool (A320)',
                         code: 'AC21826000-1-T',
                         image: 'COLE_O_LINK_DO_IMGUR_AQUI',
                         locations: ['Carro 2 (Em Cima)', 'Carro 10 (Gaveta A)']
-                    },
-                    {
-                        name: 'Spring Removal/Install (B777)',
-                        code: 'R47163',
-                        image: 'COLE_O_LINK_DO_IMGUR_AQUI',
-                        locations: ['Carro 1 (Gaveta D)', 'Carro 7 (Gaveta A)', 'Carro 8 (Gaveta E)', 'Carro 10 (Gaveta A)']
                     }
                 ],
 
@@ -252,7 +258,7 @@
                         });
                         drenagemItems.push({ 
                             id: 'dren_a5', 
-                            text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operation, gire-o levemente no sentido horário enquanto aplica a força de compressão.', 
+                            text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operação, gire-o levemente no sentido horário enquanto aplica a força de compressão.', 
                             highlight: 'info' 
                         });
                     }
@@ -398,7 +404,7 @@
                         { id: 'mod_piston', title: 'Piston House', items: pistonHouseItems }
                     ];
 
-                    // --- ETAPA 2: DOCUMENTAÇÃO (LINKS EM ALTA RESOLUÇÃO SUBSTITUÍDOS) ---
+                    // --- ETAPA 2: DOCUMENTAÇÃO ---
                     stepsData[2] = [
                         {
                             id: 'doc_mod',
