@@ -34,7 +34,7 @@
                 activeTool: null,
                 toolsList: [
                     {
-                        name: 'Adaptor (Canecas e Drenagem)',
+                        name: 'Adaptor (Canecas)',
                         code: 'Q47963-T',
                         image: 'https://i.imgur.com/UOUvSSN.jpeg',
                         locations: ['Caixa 1 (Comp. Superior)', 'Caixa 2 (Comp. Superior)', 'Caixa 3 (Comp. Superior)', 'Caixa 5 (Comp. Superior)', 'Caixa 6 (Comp. Superior)', 'Caixa 7 (Comp. Superior)', 'Caixa 8 (Gaveta 3)', 'Caixa 9 (Comp. Superior)']
@@ -252,7 +252,7 @@
                         });
                         drenagemItems.push({ 
                             id: 'dren_a5', 
-                            text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operação, gire-o levemente no sentido horário enquanto aplica a força de compressão.', 
+                            text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operation, gire-o levemente no sentido horário enquanto aplica a força de compressão.', 
                             highlight: 'info' 
                         });
                     }
@@ -398,7 +398,7 @@
                         { id: 'mod_piston', title: 'Piston House', items: pistonHouseItems }
                     ];
 
-                    // --- ETAPA 2: DOCUMENTAÇÃO (ATUALIZADA COM REFERÊNCIAS) ---
+                    // --- ETAPA 2: DOCUMENTAÇÃO (LINKS EM ALTA RESOLUÇÃO SUBSTITUÍDOS) ---
                     stepsData[2] = [
                         {
                             id: 'doc_mod',
@@ -409,7 +409,7 @@
                                     text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE legível e o S/N no invólucro plástico protetor.',
                                     reference: {
                                         btnText: 'Ref. Capa (Fita Verde)',
-                                        imgUrl: 'https://i.imgur.com/QQl6foO.jpeg',
+                                        imgUrl: 'https://i.imgur.com/mrgzFdp.jpeg',
                                         manualPage: 'Procedimento Interno',
                                         toolCode: 'Repair Request (Capa)'
                                     }
@@ -419,7 +419,7 @@
                                     text: 'Repair Request (Campo Oficina): Preencher com "QSCMY63 - Oficina Limpeza Técnica".',
                                     reference: {
                                         btnText: 'Ref. Campo Oficina',
-                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        imgUrl: 'https://i.imgur.com/X6gvu78.jpeg',
                                         manualPage: 'Procedimento Interno',
                                         toolCode: 'Repair Request (Infos)'
                                     }
@@ -429,7 +429,7 @@
                                     text: 'Repair Request (Instrução Operacional): Escrever: "Perform the cleaning IAW-IT-CPQ-004".',
                                     reference: {
                                         btnText: 'Ref. Instrução',
-                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        imgUrl: 'https://i.imgur.com/X6gvu78.jpeg',
                                         manualPage: 'Procedimento Interno',
                                         toolCode: 'Repair Request (Infos)'
                                     }
@@ -439,7 +439,7 @@
                                     text: 'Repair Request (Plaqueta de Identificação): Registrar a frase padrão: "Identification Plate: IN".',
                                     reference: {
                                         btnText: 'Ref. Plaqueta',
-                                        imgUrl: 'https://i.imgur.com/YCubfQJ.jpeg',
+                                        imgUrl: 'https://i.imgur.com/X6gvu78.jpeg',
                                         manualPage: 'Procedimento Interno',
                                         toolCode: 'Repair Request (Infos)'
                                     }
@@ -465,7 +465,17 @@
                                     }
                                 },
                                 { id: 'doc_7', text: 'Fechamento de Laudo: Aplicar carimbo (LATAM-6022470 Wellington), preencher data corrente e lançar rubrica.' },
-                                { id: 'doc_8', text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal do responsável escalado para o despacho.', highlight: 'alert' }
+                                { 
+                                    id: 'doc_8', 
+                                    text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal do responsável escalado para o despacho.', 
+                                    highlight: 'alert',
+                                    reference: {
+                                        btnText: 'Ref. Despacho',
+                                        imgUrl: 'https://i.imgur.com/aCO7tyg.jpeg',
+                                        manualPage: 'Sistema Mysys / Terminal',
+                                        toolCode: 'Validação Final'
+                                    }
+                                }
                             ]
                         }
                     ];
