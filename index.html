@@ -31,12 +31,12 @@
                 // Estado do Almoxarifado Digital (Galeria)
                 searchQuery: '',
                 currentCategory: 'all', // all, caixas, carros, armarios, frotas
-                expandedContainer: null, // Guarda qual caixa/carro está aberto
-                expandedSub: null, // Guarda qual gaveta/prateleira está aberta
+                expandedContainer: null, 
+                expandedSub: null, 
                 
-                // Banco de Dados Consolidado e Saneado (Poka-Yoke)
+                // Banco de Dados Consolidado das Ferramentas (Atualizado hoje)
                 toolsList: [
-                    // CAIXA 1 - Autemir
+                    // CAIXA 1
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', special: true },
                     { name: 'Installation Cone (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', special: true },
@@ -53,7 +53,7 @@
                     { name: 'Chave Combinada 3/8', code: 'MY46CC030', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 3' },
                     { name: 'Alicate para Anel Trava (Beta)', code: 'MY46AL079', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 4' },
 
-                    // CAIXA 2 - Wesley
+                    // CAIXA 2
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', special: true },
                     { name: 'Spatula (Special Tool)', code: '89901-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', special: true },
@@ -61,7 +61,7 @@
                     { name: 'Alicate para Anel (Beta)', code: 'MY46AL052', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 1' },
                     { name: 'Alicate de Freno', code: 'MY46AL068', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 2' },
 
-                    // CAIXA 3 - Jamile
+                    // CAIXA 3
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 3', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 3', sub: 'Compartimento Superior', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 3', sub: 'Compartimento Superior', special: true },
@@ -69,7 +69,7 @@
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 3', sub: 'Compartimento Superior', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL011', cat: 'caixas', loc: 'Caixa 3', sub: 'Gaveta 2' },
 
-                    // CAIXA 4 - Omair
+                    // CAIXA 4
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 4', sub: 'Gaveta 3', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 4', sub: 'Gaveta 2', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 4', sub: 'Gaveta 2', special: true },
@@ -78,14 +78,14 @@
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 4', sub: 'Gaveta 1', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL059', cat: 'caixas', loc: 'Caixa 4', sub: 'Gaveta 2' },
 
-                    // CAIXA 5 - Vitor
+                    // CAIXA 5
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 5', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 5', sub: 'Compartimento Superior', special: true },
                     { name: 'Spatula (Special Tool)', code: '89901-T', cat: 'caixas', loc: 'Caixa 5', sub: 'Compartimento Superior', special: true },
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 5', sub: 'Gaveta 1', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL037', cat: 'caixas', loc: 'Caixa 5', sub: 'Gaveta 2' },
 
-                    // CAIXA 6 - Ana Paula
+                    // CAIXA 6
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 6', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 6', sub: 'Compartimento Superior', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 6', sub: 'Compartimento Superior', special: true },
@@ -93,7 +93,7 @@
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 6', sub: 'Gaveta 2', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL039', cat: 'caixas', loc: 'Caixa 6', sub: 'Gaveta 2' },
 
-                    // CAIXA 7 - Marcos Paulo Belinassi
+                    // CAIXA 7
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 7', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 7', sub: 'Gaveta 1', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 7', sub: 'Gaveta 1', special: true },
@@ -101,7 +101,7 @@
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 7', sub: 'Compartimento Superior', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL049', cat: 'caixas', loc: 'Caixa 7', sub: 'Gaveta 2' },
 
-                    // CAIXA 8 - Gilson
+                    // CAIXA 8
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 8', sub: 'Gaveta 3', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 8', sub: 'Compartimento Superior', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 8', sub: 'Compartimento Superior', special: true },
@@ -109,7 +109,7 @@
                     { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 8', sub: 'Gaveta 3', special: true },
                     { name: 'Alicate de Freno', code: 'MY46AL034', cat: 'caixas', loc: 'Caixa 8', sub: 'Gaveta 1' },
 
-                    // CAIXA 9 - Marcos Paulo Barbosa
+                    // CAIXA 9
                     { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 9', sub: 'Compartimento Superior', special: true },
                     { name: 'Compression Tool (Special Tool)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 9', sub: 'Gaveta 2', special: true },
                     { name: 'Installation Cone 1 (Special Tool)', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 9', sub: 'Gaveta 1', special: true },
@@ -146,7 +146,7 @@
                     { name: 'Compression Tool', code: 'Q46498', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta F', special: true },
                     { name: 'Claw (Kit AC21869000)', code: 'Q46527', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta F', special: true },
 
-                    // ARMÁRIOS 1 e 2 (Estrutura clonada para validação futura)
+                    // ARMÁRIOS 1 e 2
                     { name: 'Caneta Pneumática', code: 'MY46CPN001', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira A' },
                     { name: 'Relógio Comparador', code: 'RC0248', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira A' },
                     { name: 'Imicro 50-63mm', code: 'IM5630', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira A' },
@@ -154,11 +154,9 @@
                     { name: 'Torquímetro 200 - 1000 LBF. IN', code: 'TO0397', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira B' },
                     { name: 'Ferramenta de Fixação dos Bolts A320/A321', code: 'MY46037-T', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira C', special: true },
                     { name: 'Paquímetro Digital', code: 'PA9886', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira C' },
-                    { name: 'Castanhas de Polimento (Falta Desenho)', code: 'PENDENTE', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira C' },
                     { name: 'Proteção p/ Jateamento de Pistões', code: 'MY46048-T', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira D', special: true },
                     { name: 'Soprador Térmico', code: 'GHG180', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira E' },
                     { name: 'Insulation Test Cable', code: 'GS47703', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira E', special: true },
-                    { name: 'Manômetro Back-Up (Rotativo)', code: 'RESERVA', cat: 'armarios', loc: 'Armário 2 (e 1)', sub: 'Prateleira E' },
 
                     // FROTAS ESPECIAIS: B787-9/10
                     { name: 'Tool, Brake Assembly (B787-9/10)', code: 'F28014000-T', cat: 'frotas', loc: 'Carro B787 - 9/10', sub: 'Parte Superior', special: true },
@@ -180,17 +178,13 @@
                     { name: 'Bushing, Shrinking (A350 Kit F28018000-1)', code: 'T45873', cat: 'frotas', loc: 'Palete A350', sub: 'Caixa 4', special: true }
                 ],
 
-                // Filtro inteligente da Galeria (Navegação estruturada ou Busca)
+                // Filtro inteligente da Galeria
                 get filteredTools() {
                     let list = this.toolsList;
-                    
-                    // Se houver busca, ignora as pastas físicas e faz varredura completa
                     if (this.searchQuery !== '') {
                         const q = this.searchQuery.toLowerCase();
                         return list.filter(t => t.name.toLowerCase().includes(q) || t.code.toLowerCase().includes(q));
                     }
-                    
-                    // Caso contrário, filtra pela categoria da pasta selecionada
                     if (this.currentCategory !== 'all') {
                         list = list.filter(t => t.cat === this.currentCategory);
                         if (this.expandedContainer) {
@@ -203,20 +197,17 @@
                     return list;
                 },
 
-                // Listar os containers únicos com base na categoria ativa (ex: lista as caixas 1, 2, 3...)
                 get uniqueContainers() {
                     const filtered = this.toolsList.filter(t => t.cat === this.currentCategory);
                     return [...new Set(filtered.map(t => t.loc))];
                 },
 
-                // Listar as sub-divisões únicas (gavetas/prateleiras) do container selecionado
                 get uniqueSubLocations() {
                     if (!this.expandedContainer) return [];
                     const filtered = this.toolsList.filter(t => t.loc === this.expandedContainer);
                     return [...new Set(filtered.map(t => t.sub))];
                 },
 
-                // Vinculação de localização a partir do checklist
                 openLocationModalByCode(code) {
                     if (!code) return;
                     const cleanCode = code.replace('-T', '').split(' / ')[0].trim().toLowerCase();
@@ -227,11 +218,11 @@
                         this.searchQuery = tool.code; 
                         window.scrollTo(0, 0);
                     } else {
-                        alert("Ferramenta ou insumo localizado fisicamente apenas na caixa padrão do mecânico.");
+                        alert("Ferramenta ou insumo localizado fisicamente apenas na caixa padrão do operador.");
                     }
                 },
 
-                // Fluxo básico do App
+                // Controle de navegação do App
                 startApp() { if(this.model && this.cycle) { this.screen = 'checklist'; this.step = 0; this.checked = {}; window.scrollTo(0, 0); } },
                 openGallery() { this.screen = 'gallery'; this.searchQuery = ''; this.currentCategory = 'all'; this.expandedContainer = null; this.expandedSub = null; window.scrollTo(0, 0); },
                 finishApp() { if(this.isStepComplete()){ alert("Bancada finalizada com sucesso!"); this.screen = 'home'; this.model = ''; this.cycle = ''; window.scrollTo(0, 0); } },
@@ -268,29 +259,73 @@
                     return icons[index]; 
                 },
 
+                // ==========================================
+                // CHECKLIST E PROCESSOS COMPLETOS RESTAURADOS
+                // ==========================================
                 currentModules() {
                     let modules = [];
-                    if (this.step === 1) { // Desmontagem
+                    
+                    if (this.step === 0) { // Preparação
                         modules.push({
-                            id: 'mod_piston',
-                            title: 'Piston Housing',
-                            subtitle: 'Desmontagem e Dreno',
+                            id: 'mod_prep_1', title: 'Recebimento e Inspeção', subtitle: 'Verificações iniciais de segurança',
                             items: [
-                                { id: 'piston_1', text: 'Utilize EPI adequado antes de iniciar a drenagem do Skydrol.', warning: true },
-                                { id: 'piston_2', text: 'Remova os parafusos do conjunto e prepare a ferramenta de compressão.', reference: { imgUrl: 'https://i.imgur.com/reDKB9A.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'F26693000-T' } }
+                                { id: 'prep_1', text: 'Confirmar modelo da aeronave, P/N da unidade e documentação anexa (Repair Request).' },
+                                { id: 'prep_2', text: 'Realizar inspeção visual preliminar em busca de danos estruturais severos ou vazamentos aparentes.' }
                             ]
                         });
                     }
+                    
+                    if (this.step === 1) { // Desmontagem
+                        // Módulo principal que contém as imagens e referências restauradas
+                        modules.push({
+                            id: 'mod_piston', title: 'Piston Housing', subtitle: 'Desmontagem e Dreno',
+                            items: [
+                                { id: 'piston_1', text: 'Utilize EPI adequado (luvas e óculos) antes de iniciar a drenagem do fluido Skydrol.', warning: true },
+                                { id: 'piston_2', text: 'Instale a ferramenta de compressão e remova os parafusos do conjunto principal para liberação segura.', reference: { imgUrl: 'https://i.imgur.com/reDKB9A.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'F26693000-T' } },
+                                { id: 'piston_3', text: 'Separe cuidadosamente o alojamento dos pistões para evitar arranhões ou danos aos selos internos.' }
+                            ]
+                        });
+                        
+                        modules.push({
+                            id: 'mod_heatsink', title: 'Heat Sink', subtitle: 'Separação dos discos de freio',
+                            items: [
+                                { id: 'heat_1', text: 'Remova sequencialmente os discos de rotor e estator da montagem principal.' },
+                                { id: 'heat_2', text: 'Acomode os discos na bancada mantendo a ordem exata de remoção para facilitar a inspeção de desgaste nas próximas etapas.' }
+                            ]
+                        });
+                        
+                        modules.push({
+                            id: 'mod_torquetube', title: 'Torque Tube', subtitle: 'Desacoplamento e inspeção visual',
+                            items: [
+                                { id: 'torque_1', text: 'Desconecte o tubo de torque da placa de pressão.' },
+                                { id: 'torque_2', text: 'Inspecione visualmente por trincas evidentes, desgaste excessivo nos guias ou deformações na estrutura.' }
+                            ]
+                        });
+                    }
+                    
                     if (this.step === 2) { // Documentação
-                        let docItems = [ { id: 'doc_1', text: 'Preencher formulário de inspeção visual preliminar.' } ];
+                        let docItems = [
+                            { id: 'doc_1', text: 'Registrar todas as anomalias visuais encontradas durante a etapa de desmontagem.' },
+                            { id: 'doc_2', text: 'Preencher adequadamente o formulário de rastreabilidade de componentes.' }
+                        ];
+                        // Condição de Overhaul mantida intacta
                         if (this.cycle === '4 (Overhaul)') {
                             docItems.push({ id: 'doc_overhaul', text: 'INSTRUÇÃO MANDATÓRIA (OVERHAUL): Incluir no Repair Request a instrução de remoção de tinta conforme norma IAW-IT-CPQ-007.', warning: true });
                         }
-                        modules.push({ id: 'mod_docs', title: 'Repair Request', subtitle: 'Documentação do conjunto', items: docItems });
+                        modules.push({ id: 'mod_docs', title: 'Registros e Repair Request', subtitle: 'Documentação do conjunto', items: docItems });
                     }
-                    if (modules.length === 0) {
-                        modules.push({ id: 'mod_dummy', title: 'Verificações Gerais', subtitle: 'Passo ' + this.stepNames[this.step], items: [ { id: 'dummy_1', text: 'Confirmar conclusão de todas as etapas visuais.' } ] });
+                    
+                    if (this.step === 3) { // Despacho
+                        modules.push({
+                            id: 'mod_despacho', title: 'Acondicionamento e Envio', subtitle: 'Preparação para a próxima etapa',
+                            items: [
+                                { id: 'despacho_1', text: 'Proteger todas as conexões hidráulicas e roscas expostas com os tampões adequados.' },
+                                { id: 'despacho_2', text: 'Acondicionar os subconjuntos na caixa de transporte apropriada e forrada.' },
+                                { id: 'despacho_3', text: 'Encaminhar o conjunto devidamente documentado para o setor de lavagem e inspeção NDT.' }
+                            ]
+                        });
                     }
+                    
                     return modules;
                 }
             }));
@@ -299,6 +334,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen" x-data="appData">
 
+    <!-- ==================== TELA HOME ==================== -->
     <div x-show="screen === 'home'" x-cloak class="p-6 max-w-md mx-auto min-h-screen flex flex-col justify-center">
         <div class="text-center mb-10">
             <h1 class="text-3xl font-black text-blue-900 tracking-tight">LATAM <span class="text-red-600">Setup</span></h1>
@@ -335,12 +371,14 @@
             </button>
         </div>
 
+        <!-- Botão para acessar a Galeria Nova -->
         <button @click="openGallery()" class="mt-8 flex items-center justify-center gap-2 w-full text-blue-900 font-bold p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             Almoxarifado Digital Inteligente
         </button>
     </div>
 
+    <!-- ==================== TELA CHECKLIST ==================== -->
     <div x-show="screen === 'checklist'" x-cloak class="pb-24 max-w-md mx-auto">
         <div class="bg-blue-900 text-white p-6 sticky top-0 z-20 shadow-md">
             <div class="flex justify-between items-center mb-4">
@@ -353,6 +391,7 @@
                 </div>
             </div>
 
+            <!-- Progresso de Etapas -->
             <div class="flex justify-between items-center relative">
                 <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-blue-800 -z-10"></div>
                 <template x-for="(name, index) in stepNames" :key="index">
@@ -369,6 +408,7 @@
         </div>
 
         <div class="p-4 space-y-4">
+            <!-- Renderização dos Módulos completos -->
             <template x-for="module in currentModules()" :key="module.id">
                 <div @click="openModule(module)" 
                      class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform">
@@ -399,6 +439,7 @@
         </div>
     </div>
 
+    <!-- ==================== TELA DO MÓDULO (CHECKBOXES E REFERÊNCIAS VISUAIS) ==================== -->
     <div x-show="screen === 'module'" x-cloak class="pb-24 max-w-md mx-auto min-h-screen bg-gray-50">
         <template x-if="activeModule">
             <div>
@@ -427,6 +468,7 @@
                                 </div>
                             </label>
 
+                            <!-- Botões de Referência (Abrem a imagem e vinculam ao novo Almoxarifado) -->
                             <template x-if="item.reference">
                                 <div class="px-4 pb-4 flex gap-2">
                                     <button @click="openModalImage(activeModule.title, item.reference)" class="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 py-2.5 px-3 rounded-lg text-sm font-bold border border-blue-100 hover:bg-blue-100 transition-colors">
@@ -449,6 +491,7 @@
         </template>
     </div>
 
+    <!-- ==================== TELA ALMOXARIFADO DIGITAL ==================== -->
     <div x-show="screen === 'gallery'" x-cloak class="max-w-md mx-auto min-h-screen bg-gray-50 flex flex-col pb-10">
         <div class="bg-blue-900 text-white p-4 sticky top-0 z-20 shadow-md flex items-center gap-3">
             <button @click="screen = 'home'" class="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -466,6 +509,7 @@
             </div>
         </div>
 
+        <!-- Botões de Navegação Física -->
         <div x-show="searchQuery === ''" class="bg-white p-2 border-b border-gray-200 flex gap-1 overflow-x-auto text-xs font-bold uppercase tracking-wider">
             <button @click="currentCategory = 'all'; expandedContainer = null; expandedSub = null" :class="currentCategory === 'all' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Tudo</button>
             <button @click="currentCategory = 'caixas'; expandedContainer = null; expandedSub = null" :class="currentCategory === 'caixas' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Caixas (1-9)</button>
@@ -535,6 +579,7 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL DE APOIO VISUAL ==================== -->
     <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-gray-900/80 backdrop-blur-sm transition-opacity">
         <div @click.away="closeModalImage()" class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col">
             <div class="bg-gray-900 px-4 py-3 flex justify-between items-center text-white">
