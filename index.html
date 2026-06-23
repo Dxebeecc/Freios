@@ -2,901 +2,368 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Setup LATAM - Freios (Módulos)</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficina de Freios - Fluxo de Trabalho</title>
+    <!-- Tailwind CSS para Estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        /* Proteção para a tela não piscar ou ficar branca */
-        [x-cloak] { display: none !important; }
-    </style>
-
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('appData', () => ({
-                screen: 'home',
-                process: null, // 'desmontagem' ou 'inspecao'
-                model: null,
-                cycle: null,
-                step: 0,
-                activeModule: null, 
-                checked: {},
-                
-                modalOpen: false,
-                modalData: { imgUrl: '', manualPage: '', toolCode: '' },
-
-                // --- ESTADOS DA GALERIA (PASTAS) ---
-                searchQuery: '',
-                activeTab: 'all',
-                selectedContainer: null,
-                selectedSub: null,
-
-                // --- BANCO DE DADOS ATUALIZADO ---
-                toolsList: [
-                    // CAIXA 1
-                    { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: 'https://i.imgur.com/UOUvSSN.jpeg', special: true },
-                    { name: 'Compression Tool (A320)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Installation Cone 1', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Installation Cone 2', code: 'Q47965-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Spatula (Espátula)', code: '89901-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 3/4', code: 'MY46SQ085', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Extensor', code: 'MY46EX055', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Braço de Torque', code: 'MY46BF007', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Macete', code: 'MY46MA002', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 1/4', code: 'MY46SQ238', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Corte', code: 'MY46AL052', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Freno', code: 'MY46AL050', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 2', image: '' },
-                    { name: 'Chave Combinada 3/8', code: 'MY46CC030', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 3', image: '' },
-                    { name: 'Alicate para Anel Trava (Beta)', code: 'MY46AL079', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 4', image: '' },
-
-                    // CAIXA 2
-                    { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: 'https://i.imgur.com/UOUvSSN.jpeg', special: true },
-                    { name: 'Compression Tool', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Spatula (Espátula)', code: '89901-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 13/16', code: 'MY46SQ029', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Alicate para Anel (Beta)', code: 'MY46AL052', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Freno', code: 'MY46AL068', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 2', image: '' },
-
-                    // CARRO 1
-                    { name: 'Testador de Molas', code: 'EQ0003', cat: 'carros', loc: 'Carro 1', sub: 'Parte Superior', image: '' },
-                    { name: 'Base de Apoio - Freios A320', code: 'MY46063-T', cat: 'carros', loc: 'Carro 1', sub: 'Parte Superior', image: '', special: true },
-                    { name: 'Calibration Block', code: 'CBS001-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta A', image: '' },
-                    { name: 'Paquímetro', code: 'PA9887S', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta A', image: '' },
-                    { name: 'Jogo de Soquetes', code: 'SQJO001', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta B', image: '' },
-                    { name: 'Ferramenta Desmontagem A320/B777', code: 'MY18027-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: '', special: true },
-                    { name: 'Tool (Insulator Assy B777)', code: 'F27701000-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Spring Removal/Install (B777)', code: 'R47163', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: 'https://i.imgur.com/n85AF4P.jpeg', special: true },
-
-                    // CARRO 2
-                    { name: 'Spanner (Canecas B777)', code: 'R47166', cat: 'carros', loc: 'Carro 2', sub: 'Gaveta A', image: 'https://i.imgur.com/w9Fjg8u.jpeg' },
-                    { name: 'Riveting Tool (A320)', code: 'AC21826000-1-T', cat: 'carros', loc: 'Carro 2', sub: 'Em Cima', image: '' },
-
-                    // CARRO 8
-                    { name: 'Shrinking Bush (Kit F26692000-T)', code: 'R46105-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta A', image: '', special: true },
-                    { name: 'Half Shell (Kit F26692000-T)', code: 'R46103-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta A', image: '', special: true },
-                    { name: 'Piston Installation Support Tool 7', code: '114-325-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta B', image: '', special: true },
-                    { name: 'Spring Removal/Install (B777)', code: 'R47163', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta E', image: 'https://i.imgur.com/n85AF4P.jpeg', special: true },
-
-                    // ARMÁRIOS 1 E 2
-                    { name: 'Caneta Pneumática', code: 'MY46CPN001', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira A', image: '' },
-                    { name: 'Relógio Comparador', code: 'RC0248', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira A', image: '' },
-                    { name: 'Torquímetro 50-250 LBF.FT', code: 'TO0290', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira B', image: '' },
-                    { name: 'Ferramenta de Fixação dos Bolts A320/A321', code: 'MY46037-T', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira C', image: '', special: true },
-                    { name: 'Proteção p/ Jateamento de Pistões', code: 'MY46048-T', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira D', image: '', special: true },
-
-                    // FROTAS ESPECIAIS: B787 e A350
-                    { name: 'Tool, Brake Assembly (B787-9/10)', code: 'F28014000-T', cat: 'frotas', loc: 'Carro B787 - 9/10', sub: 'Parte Superior', image: '', special: true },
-                    { name: 'EBA Carrier Guide (B787-9/10)', code: 'GS47892', cat: 'frotas', loc: 'Carro B787 - 9/10', sub: 'Caixa 2', image: '', special: true },
-                    { name: 'Compression Tool (A350)', code: 'T45811', cat: 'frotas', loc: 'Palete A350', sub: 'Caixa 3', image: '', special: true }
-                ],
-
-                // --- FUNÇÕES DA NOVA GALERIA ---
-                get filteredTools() {
-                    let list = this.toolsList;
-                    if (this.searchQuery !== '') {
-                        const q = this.searchQuery.toLowerCase();
-                        return list.filter(t => t.name.toLowerCase().includes(q) || t.code.toLowerCase().includes(q));
-                    }
-                    if (this.activeTab !== 'all') {
-                        list = list.filter(t => t.cat === this.activeTab);
-                        if (this.selectedContainer) {
-                            list = list.filter(t => t.loc === this.selectedContainer);
-                            if (this.selectedSub) {
-                                list = list.filter(t => t.sub === this.selectedSub);
-                            }
-                        }
-                    }
-                    return list;
-                },
-
-                get uniqueContainers() {
-                    const filtered = this.toolsList.filter(t => t.cat === this.activeTab);
-                    return [...new Set(filtered.map(t => t.loc))];
-                },
-
-                get uniqueSubLocations() {
-                    if (!this.selectedContainer) return [];
-                    const filtered = this.toolsList.filter(t => t.loc === this.selectedContainer);
-                    return [...new Set(filtered.map(t => t.sub))];
-                },
-
-                openLocationModalByCode(code) {
-                    if(!code) return;
-                    const cleanCode = code.replace('-T', '').split(' / ')[0].trim().toLowerCase();
-                    const tool = this.toolsList.find(t => t.code.toLowerCase().includes(cleanCode));
-                    if (tool) {
-                        this.screen = 'gallery';
-                        this.searchQuery = tool.code;
-                        window.scrollTo(0, 0);
-                    } else {
-                        alert("Ferramenta mapeada na caixa padrão da oficina.");
-                    }
-                },
-
-                // --- NOVO ROTEAMENTO DE PROCESSOS ---
-                get currentStepNames() {
-                    if (this.process === 'inspecao') {
-                        return ['Limpeza Pós-NDT', 'Inspeção Dimensional', 'Cruzamento NDT e FRC', 'Fechamento'];
-                    }
-                    return ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'];
-                },
-
-                startApp() {
-                    if(this.model && this.cycle) {
-                        this.screen = 'processSelect';
-                        window.scrollTo(0, 0);
-                    }
-                },
-
-                startProcess(selectedProcess) {
-                    this.process = selectedProcess;
-                    this.screen = 'checklist';
-                    this.step = 0;
-                    this.checked = {};
-                    window.scrollTo(0, 0);
-                },
-
-                openGallery() {
-                    this.screen = 'gallery';
-                    this.searchQuery = '';
-                    this.activeTab = 'all';
-                    this.selectedContainer = null;
-                    this.selectedSub = null;
-                    window.scrollTo(0, 0);
-                },
-
-                finishApp() {
-                    if(this.isStepComplete()){
-                        alert(`OS de ${this.process.toUpperCase()} finalizada com sucesso!`);
-                        this.screen = 'home';
-                        this.model = null;
-                        this.cycle = null;
-                        this.process = null;
-                        window.scrollTo(0, 0);
-                    }
-                },
-
-                openModule(module) {
-                    this.activeModule = module;
-                    this.screen = 'module';
-                    window.scrollTo(0, 0);
-                },
-
-                closeModule() {
-                    this.activeModule = null;
-                    this.screen = 'checklist';
-                    window.scrollTo(0, 0);
-                },
-
-                toggleCheck(id) {
-                    this.checked[id] = !this.checked[id];
-                },
-
-                openModalImage(refData) {
-                    this.modalData = refData;
-                    this.modalOpen = true;
-                },
-
-                closeModalImage() {
-                    this.modalOpen = false;
-                },
-
-                isModuleComplete(module) {
-                    if(!module || !module.items) return false;
-                    return module.items.every(item => this.checked[item.id]);
-                },
-
-                isStepComplete() {
-                    const modules = this.currentModules();
-                    if(!modules || modules.length === 0) return false;
-                    
-                    for (let i = 0; i < modules.length; i++) {
-                        const items = modules[i].items || [];
-                        for (let j = 0; j < items.length; j++) {
-                            if (!this.checked[items[j].id]) {
-                                return false; 
-                            }
-                        }
-                    }
-                    return true;
-                },
-
-                getStepIcon(index) {
-                    const icons = [
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>'
-                    ];
-                    return icons[index];
-                },
-
-                // LÓGICA DO MOTOR DE REGRAS
-                currentModules() {
-                    if (!this.model || !this.cycle || !this.process) return [];
-
-                    const isA321 = this.model === 'A321';
-                    const isB777 = this.model === 'B777';
-                    const isA320 = this.model === 'A320' || this.model === 'A320 NEO';
-                    const isOverhaul = this.cycle === 4;
-                    const descartaVedacoesA32X = isA321 ? true : (this.cycle === 2 || this.cycle === 4);
-
-                    let stepsData = [];
-
-                    // ==========================================
-                    // TRILHA 1: DESMONTAGEM (CÓDIGO INTACTO)
-                    // ==========================================
-                    if (this.process === 'desmontagem') {
-                        
-                        // --- ETAPA 0: PREPARAÇÃO ---
-                        stepsData[0] = [
-                            {
-                                id: 'prep_mod',
-                                title: 'Preparação de Sistema',
-                                items: [
-                                    { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
-                                    { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
-                                ]
-                            }
-                        ];
-
-                        // --- ETAPA 1: DESMONTAGEM ---
-                        let drenagemItems = [];
-                        if (isB777) {
-                            drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável e perigoso.', highlight: 'alert' });
-                            drenagemItems.push({ id: 'dren_b2', text: 'Desapertar e remover o parafuso (1-350) e a anilha de sangria (1-360).' });
-                            
-                            let drenoRef = isOverhaul ? {
-                                btnText: 'Ref. Conexão', imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg', manualPage: 'CMM Ref (Verificar CMM)', toolCode: 'Conexão Hidráulica B777'
-                            } : null;
-
-                            drenagemItems.push({ 
-                                id: 'dren_b3', 
-                                text: 'Conectar a mangueira de dreno (ponta fina) e abaixar as canelas dos 6 pistões. Dica: Girar no sentido horário e bater levemente na lateral.', 
-                                highlight: 'info',
-                                reference: drenoRef
-                            });
-                            drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380) com torque de 6,8 N.m (60.19 lbf.in).', highlight: 'alert' });
-                        } else {
-                            drenagemItems.push({ id: 'dren_a1', text: 'AVISO: Usar equipamento de proteção (EPI) para pele e olhos. O fluido hidráulico é inflamável e altamente irritante.', highlight: 'alert' });
-                            drenagemItems.push({ id: 'dren_a2', text: 'Conectar a mangueira de dreno na conexão/válvula de sangria e direcionar a outra ponta para o recipiente de contenção adequado.' });
-                            drenagemItems.push({ id: 'dren_a3', text: 'Empurrar ("apertar") os pistões para baixo. Essa ação força a descida do pistão, esvaziando o fluido de dentro do Piston House para a mangueira.' });
-                            drenagemItems.push({ id: 'dren_a4', text: 'DICA TÉCNICA (Circuito Dividido): Cada conexão de dreno está ligada a uma galeria de apenas 7 pistões. Após esvaziar um lado, é obrigatório trocar a válvula para drenar os 7 pistões do conjunto oposto.', highlight: 'info' });
-                            drenagemItems.push({ id: 'dren_a5', text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operação, gire-o levemente no sentido horário enquanto aplica a força de compressão.', highlight: 'info' });
-                        }
-
-                        let torqueTubeItems = [];
-                        if (isB777) {
-                            if (isOverhaul) {
-                                torqueTubeItems.push({ id: 'tt_b1', text: 'OVERHAUL (4º Ciclo): Não há intervenção de desmontagem no Torque Tube. Encaminhar unido. Verificar pág 5000 para envio ao NDT.', highlight: 'info' });
-                            } else {
-                                torqueTubeItems.push({ id: 'tt_b2', text: 'Torque Tube: Nenhuma ação de desmontagem requerida nesta ordem de serviço.' });
-                            }
-                        } else {
-                            torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Separar e fixar na bancada SOMENTE o Piston House para abrir.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House alinhados na horizontal.', highlight: 'info' });
-                            torqueTubeItems.push({ id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor longo e catraca para fixação principal. (Segurar o parafuso por baixo).' });
-                            torqueTubeItems.push({ id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira pneumática para remover os 3 parafusos maiores da carcaça.' });
-                            if (isOverhaul) {
-                                torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa hidráulica para a remoção segura dos pinos.', highlight: 'alert' });
-                            }
-                        }
-
-                        let pistonHouseItems = [];
-                        if (isB777) {
-                            pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO DE SEGURANÇA: Não empurrar os pistões (1-240) para dentro das camisas enquanto instalados, pode causar espirro de fluido hidráulico.', highlight: 'alert' });
-                            
-                            if (isOverhaul) {
-                                pistonHouseItems.push({ 
-                                    id: 'ph_b_conexao', 
-                                    text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting) para drenagem completa e inspeção.',
-                                    highlight: 'info',
-                                    reference: { btnText: 'Ref. Conexão B777', imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg', manualPage: 'CMM Ref (Verificar CMM)', toolCode: 'Conexão Hidráulica B777' }
-                                });
-                            }
-
-                            pistonHouseItems.push({ 
-                                id: 'ph_b_insulator', 
-                                text: 'Remover o "insulator assembly" (1-100) de cada pistão usando a ferramenta F27701000. CUIDADO: Não usar ferramentas afiadas.',
-                                reference: { btnText: 'Ref. Tool F27701000', imgUrl: 'https://i.imgur.com/reDKB9A.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'Tool F27701000' }
-                            });
-                            
-                            pistonHouseItems.push({ 
-                                id: 'ph_b_sleeve', 
-                                text: 'Desrosquear e remover as canecas (Return Piston Assemblies 1-090) utilizando a ferramenta especial R47166.',
-                                reference: { btnText: 'Ref. Tool R47166', imgUrl: 'https://i.imgur.com/w9Fjg8u.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'Tool R47166' }
-                            });
-
-                            if (isOverhaul) {
-                                pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa do alojamento. Alerta crítico: Remover todas as conexões e preservar a placa de identificação.', highlight: 'alert' });
-                            }
-
-                            pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE (Poka-Yoke): Descartar permanentemente TODOS os anéis de vedação e partes internas do pistão no lixo em qualquer ciclo (1º ao 4º).', highlight: 'alert' });
-
-                            pistonHouseItems.push({ 
-                                id: 'ph_b_spring', 
-                                text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163 sobre o guia da mola para comprimir a mola (1-200) até acessar o "second groove" do pistão. Em seguida, remover o retaining ring (1-170) com o alicate adequado (Q46498).',
-                                highlight: 'info',
-                                reference: { btnText: 'Ref. Ferramentas', imgUrl: 'https://i.imgur.com/n85AF4P.jpeg', manualPage: 'Page 3010 / CMM 32-49-60', toolCode: 'Tool R47163 / Q46498' }
-                            });
-
-                        } else {
-                            if (isOverhaul) {
-                                pistonHouseItems.push({ 
-                                    id: 'ph_a32x_conexao', 
-                                    text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting). (Aguardando imagem específica do modelo).',
-                                    highlight: 'info',
-                                    reference: { btnText: 'Ref. Conexão A32X', imgUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400', manualPage: 'CMM Ref (Aguardando)', toolCode: 'Conexão Hidráulica A32X' }
-                                });
-                            }
-
-                            pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
-                            
-                            pistonHouseItems.push({ 
-                                id: 'desm_sleeve_a32x', 
-                                text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial Adaptador (Q47963).', 
-                                highlight: 'info',
-                                reference: { btnText: 'Ref. Ferramenta (Q47963)', imgUrl: 'https://i.imgur.com/UOUvSSN.jpeg', manualPage: 'CMM Page 3010 / Fig 2', toolCode: 'Adaptador Q47963' },
-                                reference2: { btnText: 'Ref. Piston Sleeve', imgUrl: 'https://i.imgur.com/EWLk3BW.jpeg', manualPage: 'CMM Fig 2, Item 110', toolCode: 'Piston Sleeve (2-110)' }
-                            });
-
-                            pistonHouseItems.push({ 
-                                id: 'desm_pistao_a32x', 
-                                text: 'Remover o pistão. Cortar e descartar a vedação externa conforme regra de ciclo.', 
-                                highlight: 'info',
-                                reference: { btnText: 'Ref. Vedação', imgUrl: 'https://i.imgur.com/mvo5WSk.jpeg', manualPage: 'CMM Ref', toolCode: 'Vedação Externa Pistão' }
-                            });
-
-                            if (isA321) {
-                                pistonHouseItems.push({ id: 'desm_5', text: 'Peça 160 (Bushing) e Peça 170 (Trava): SALVAR AMBAS. Colocar juntas no saco plástico para acompanhar a PASTA.', highlight: 'info' });
-                                pistonHouseItems.push({ id: 'desm_6', text: 'Peça 180 (Vedação menor): Cortar e DESCARTAR na lixeira de resíduos contaminados.', highlight: 'alert' });
-                            }
-                            if (isA320) {
-                                pistonHouseItems.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly - Pág 10046): Remover e DESCARTAR obrigatoriamente no lixo (Lembrete: Itens 160/170 não constam nesta carcaça).', highlight: 'alert' });
-                            }
-                            pistonHouseItems.push({ 
-                                id: 'desm_vedacoes', 
-                                text: descartaVedacoesA32X ? 'VEDAÇÕES GRANDES (Caneca/Pistão): Cortar com estilete e DESCARTAR no lixo de descarte.' : 'VEDAÇÕES GRANDES (Caneca/Pistão): PRESERVAR. Acomodar no saquinho, grampear a fita verde e anexar à pasta física.',
-                                highlight: descartaVedacoesA32X ? 'alert' : 'info'
-                            });
-                        }
-
-                        stepsData[1] = [
-                            { id: 'mod_drenagem', title: isB777 ? 'Drenar Óleo (6 Pistões)' : 'Drenar Fluido Hidráulico', items: drenagemItems },
-                            { id: 'mod_torque', title: 'Torque Tube', items: torqueTubeItems },
-                            { id: 'mod_piston', title: 'Piston House', items: pistonHouseItems }
-                        ];
-
-                        // --- ETAPA 2: DOCUMENTAÇÃO ---
-                        let reqInstructionText = isOverhaul ? 'Perform the cleaning IAW-IT-CPQ-004 And remove painting IAW-IT-CPQ-007' : 'Perform the cleaning IAW-IT-CPQ-004';
-                        let restoreRemarksText = 'This component was disassembled IAW page 3001 to 3012';
-
-                        stepsData[2] = [
-                            {
-                                id: 'doc_mod',
-                                title: 'Formulários e Fitas',
-                                items: [
-                                    { id: 'doc_1', text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE legível e o S/N no invólucro plástico protetor.', reference: { btnText: 'Ref. Capa (Fita Verde)', imgUrl: 'https://i.imgur.com/mrgzFdp.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Capa)' } },
-                                    { id: 'doc_2', text: 'Repair Request (Campo Oficina): Preencher com "QSCMY63 - Oficina Limpeza Técnica".', reference: { btnText: 'Ref. Campo Oficina', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
-                                    { id: 'doc_3', text: `Repair Request (Instrução Operacional): Escrever: "${reqInstructionText}".`, reference: { btnText: 'Ref. Instrução', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
-                                    { id: 'doc_4', text: 'Repair Request (Plaqueta de Identificação): Registrar a frase padrão: "Identification Plate: IN".', reference: { btnText: 'Ref. Plaqueta', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
-                                    { id: 'doc_5', text: `Component Restoration Form (Histórico): Informar com precisão o NUMBER of cycles (${this.cycle}).`, reference: { btnText: 'Ref. Ciclos', imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Component Restoration Form' } },
-                                    { id: 'doc_6', text: `Component Restoration Form (Remarks): Adicionar: "${restoreRemarksText}".`, reference: { btnText: 'Ref. Remarks', imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Component Restoration Form' } },
-                                    { id: 'doc_7', text: 'Fechamento de Laudo: Aplicar carimbo da LATAM, preencher data corrente e lançar rubrica.' },
-                                    { id: 'doc_8', text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal do responsável escalado para o despacho.', highlight: 'alert', reference: { btnText: 'Ref. Despacho', imgUrl: 'https://i.imgur.com/aCO7tyg.jpeg', manualPage: 'Sistema Mysys / Terminal', toolCode: 'Validação Final' } }
-                                ]
-                            }
-                        ];
-
-                        // --- ETAPA 3: DESPACHO ---
-                        let despachoItems = [];
-                        if (isB777) {
-                            despachoItems.push({ id: 'fin_1_b', text: 'FLUXO MATERIAL: Movimentar os conjuntos laváveis protegidos com o Repair Request para a área da Limpeza Técnica 2.' });
-                            despachoItems.push({ id: 'fin_2_b', text: 'LOGÍSTICA INTERNA DA PASTA: Arquivar a documentação técnica no ARMÁRIO PADRÃO da oficina de freios.', highlight: 'info' });
-                        } else {
-                            despachoItems.push({ id: 'fin_1', text: isA321 ? 'FLUXO MATERIAL A321: Enviar para lavagem apenas o Piston House + Repair Request.' : 'FLUXO MATERIAL A320: Enviar o conjunto completo (Torque Tube + Piston House) com a guia Repair Request para a Limpeza Técnica 2.' });
-                            
-                            let textoLogisticaA320 = descartaVedacoesA32X 
-                                ? 'LOGÍSTICA DA PASTA A320: Guardar a pasta física contendo os laudos no ARMÁRIO PADRÃO.' 
-                                : 'LOGÍSTICA DA PASTA A320: Guardar a pasta física contendo os laudos e o lote de vedações no ARMÁRIO PADRÃO.';
-                                
-                            despachoItems.push({ id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA A321: Guardar a pasta (Assegurar as peças 160/170 no saquinho) no ARMÁRIO DE AGUARDO DE REPARO.' : textoLogisticaA320, highlight: isA321 ? 'alert' : 'info' });
-                        }
-                        despachoItems.push({ id: 'fin_3', text: 'LANÇAMENTO SISTÊMICO: Atualizar a Planilha de Movimentação Logística para o status de "Limpeza Técnica 2".' });
-                        despachoItems.push({ id: 'fin_4', text: 'BAIXA OPERACIONAL: Realizar a baixa técnica definitiva e encerramento da Ordem de Serviço (OS) dentro do Mysys.' });
-
-                        stepsData[3] = [
-                            { id: 'fin_mod', title: 'Destinos e Sistema', items: despachoItems }
-                        ];
-
-                    // ==========================================
-                    // TRILHA 2: INSPEÇÃO (NOVO CÓDIGO)
-                    // ==========================================
-                    } else if (this.process === 'inspecao') {
-                        
-                        if (this.model === 'A320' && this.cycle === 4) {
-                            
-                            // ETAPA 0: LIMPEZA PÓS-NDT
-                            stepsData[0] = [
-                                {
-                                    id: 'insp_clean',
-                                    title: 'Descontaminação Crítica',
-                                    items: [
-                                        { id: 'insp_c1', text: 'Banho Químico: Imergir Piston Housing (2-380), Torque Tube (1-310), Retaining Plate (1-60A), Rear Plate (1-80A), pinos e parafusos no produto designado para remover partículas magnéticas/líquido penetrante.' },
-                                        { id: 'insp_c2', text: 'Ação Mecânica: Acionar profissional capacitado para aplicar o jato de limpeza, desobstruindo todas as roscas e cavidades cegas.' },
-                                        { id: 'insp_c3', text: 'SECAGEM (POKA-YOKE): Aplicar ar comprimido IMEDIATAMENTE no Torque Tube e demais peças de aço de liga. Prioridade absoluta para bloquear qualquer risco de oxidação.', highlight: 'alert' }
-                                    ]
-                                }
-                            ];
-
-                            // ETAPA 1: INSPEÇÃO DIMENSIONAL
-                            stepsData[1] = [
-                                {
-                                    id: 'insp_dim',
-                                    title: 'Metrologia (FRC - Pág 9)',
-                                    items: [
-                                        { id: 'insp_d1', text: 'Piston Housing (2-380): Usar Imicro 50-63mm. Tolerância Máxima permitida: 50,846 mm.', highlight: 'info' },
-                                        { id: 'insp_d2', text: 'Registro Piston: Medir as 14 cavidades (furos roscados das canecas) e anotar os valores exatos nas colunas 1 a 14 da seção "Measured value" na Pág 9 do FRC.' },
-                                        { id: 'insp_d3', text: 'Torque Tube (1-310): Usar micrômetro interno correspondente. Tolerância exigida: 22,00 a 22,021 mm.', highlight: 'info' },
-                                        { id: 'insp_d4', text: 'Registro Torque Tube: Medir os 9 furos de alojamento dos pinos e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' },
-                                        { id: 'insp_d5', text: 'Pinos (1-370): Usar micrômetro externo de precisão. Tolerância exigida: 22,041 a 22,054 mm.', highlight: 'info' },
-                                        { id: 'insp_d6', text: 'Registro Pinos: Medir os 9 pinos de torque e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' }
-                                    ]
-                                }
-                            ];
-
-                            // ETAPA 2: CRUZAMENTO NDT E FRC
-                            stepsData[2] = [
-                                {
-                                    id: 'insp_ndt',
-                                    title: 'Auditoria de Laudos',
-                                    items: [
-                                        { id: 'insp_n1', text: 'Verificação: Posicionar o Laudo NDT (Ex: W3558/26) lado a lado com as Páginas 3 e 6 do formulário FRC.' },
-                                        { id: 'insp_n2', text: 'Cruzamento de Status: Localizar cada peça pelo P/N no NDT. Se a coluna "Result" constar "A" (Approved) ou "R" (Rejected), marque com um "X" a respectiva coluna "Approved? Yes/No" no FRC.' },
-                                        { id: 'insp_n3', text: 'CHANCELA OFICIAL: Imediatamente após assinalar o teste no FRC (Magnetic/Penetrant), aplique no campo "Performed by" o Carimbo Oficial LATAM (Ex: LATAM-6022470 Wellington), preencha a Data corrente e assine a Rubrica.', highlight: 'alert' },
-                                        { id: 'insp_n4', text: 'Alerta Operacional: Assine ESTRITAMENTE as linhas referentes à transcrição/validação do NDT. Não sobrescreva as inspeções visuais realizadas por outros inspetores.', highlight: 'info' }
-                                    ]
-                                }
-                            ];
-
-                            // ETAPA 3: FECHAMENTO
-                            stepsData[3] = [
-                                {
-                                    id: 'insp_close',
-                                    title: 'Red Tag e Encerramento',
-                                    items: [
-                                        { id: 'insp_f1', text: 'Etiqueta Vermelha (Preenchimento): Para cada item reprovado com "R" no NDT, consultar o P/N correto no CMM (págs 10001+).' },
-                                        { id: 'insp_f2', text: 'Regra de Lote (S/N): Preencher o S/N SOMENTE se a peça condenada for o Piston House. Para todas as outras (Placas, etc.), preencher com "N/A".', highlight: 'alert' },
-                                        { id: 'insp_f3', text: 'Identificação na Tag: Copiar O.S. (Tally Sheet), Prefixo e Base (QSCMY-46) diretamente da capa do FRC. Assinar, carimbar e datar a etiqueta.' },
-                                        { id: 'insp_f4', text: 'Fechamento da Capa FRC (Pág 1): Na seção "Progressive Inspection", marcar a caixa "Findings" e documentar a falha baseada no NDT (Ex: "Retaining Plate 1-60A and Rear Plate 1-80A were condemned during NDT inspection due to crack").', highlight: 'info' },
-                                        { id: 'insp_f5', text: 'Validação Final: Aplicar Carimbo Oficial LATAM, Data e Rubrica ao lado da justificativa para fechar tecnicamente a auditoria.' }
-                                    ]
-                                }
-                            ];
-
-                        } else {
-                            // Fallback caso selecionem um modelo/ciclo ainda não mapeado na inspeção
-                            stepsData[0] = [
-                                {
-                                    id: 'insp_na',
-                                    title: 'Procedimento Indisponível',
-                                    items: [
-                                        { id: 'insp_na1', text: 'Atenção: O fluxo guiado de inspeção para este equipamento ou ciclo específico ainda não foi mapeado no aplicativo.', highlight: 'alert' },
-                                        { id: 'insp_na2', text: 'Por favor, retorne à tela inicial e certifique-se de selecionar as opções corretas (Ex: A320 + 4º Ciclo).' }
-                                    ]
-                                }
-                            ];
-                        }
-                    }
-
-                    return stepsData[this.step] || [];
-                }
-            }));
-        });
-    </script>
+    <!-- Alpine.js para a Lógica de Telas e Estado -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen" x-data="appData">
+<body class="bg-gray-50 font-sans antialiased text-gray-800 pb-12">
 
-    <!-- TELA 1: HOME -->
-    <div x-show="screen === 'home'" x-cloak class="min-h-screen flex flex-col items-center">
-        <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col">
-            <div class="bg-red-600 p-8 text-white text-center rounded-b-3xl shadow-lg relative">
-                <button @click="openGallery()" class="absolute top-6 right-6 p-2 bg-white/20 hover:bg-white/30 rounded-full transition" title="Acervo de Ferramentas">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                </button>
-
-                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-90"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.6L3 8l5 5-3 3-3-1-1 1 2.5 4.5L11 23l1-1-1-3 3-3 5 5 1.2-.7c.4-.2.7-.6.6-1.1z"/></svg>
-                <h1 class="text-3xl font-extrabold tracking-tight">Setup LATAM</h1>
-                <p class="text-red-100 mt-1 font-medium">Guia Operacional Avançado</p>
+    <div x-data="brakeApp()" class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col justify-between">
+        
+        <!-- CABEÇALHO -->
+        <header class="bg-slate-900 text-white p-4 sticky top-0 z-50 flex items-center justify-between shadow-md">
+            <div>
+                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Módulo de Execução</p>
+                <h1 class="text-lg font-extrabold" x-text="'Etapa ' + currentStep + ': ' + stepTitles[currentStep]"></h1>
             </div>
+            <div class="bg-slate-800 text-cyan-400 px-3 py-1 rounded-full font-mono text-sm font-bold">
+                <span x-text="currentStep"></span>/6
+            </div>
+        </header>
 
-            <div class="flex-1 p-6 flex flex-col justify-center space-y-8">
-                <div>
-                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">1. Qual o equipamento?</h2>
+        <!-- PROGRESS BAR -->
+        <div class="w-full bg-slate-200 h-1.5 sticky top-[60px] z-50">
+            <div class="bg-cyan-500 h-1.5 transition-all duration-300" :style="'width: ' + ((currentStep / 6) * 100) + '%'"></div>
+        </div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex-grow p-5 space-y-6">
+
+            <!-- SIMULAÇÃO DAS ETAPAS ANTERIORES PARA CONTEXTO DA RED TAG -->
+            <template x-if="currentStep < 4">
+                <div class="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-6 text-center">
+                    <p class="text-sm text-slate-500 font-medium">As Etapas 1, 2 e 3 processam a Limpeza, Inspeção Dimensional e Laudo do NDT.</p>
+                    <button @click="currentStep = 4" class="mt-4 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        Avançar para Etapa 4
+                    </button>
+                </div>
+            </template>
+
+            <!-- ETAPA 4: MATERIAL CONDENADO (RED TAG) -->
+            <div x-show="currentStep === 4" class="space-y-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                    <strong>Atenção:</strong> Se houver itens reprovados na metrologia ou trincados no NDT, configure-os abaixo para alimentar automaticamente o FRC.
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-4">
+                    <label class="block text-sm font-bold text-gray-700">Houve alguma peça condenada neste processo?</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <template x-for="m in ['A320', 'A320 NEO', 'A321', 'B777']" :key="m">
-                            <button @click="model = m" 
-                                :class="model === m ? 'bg-blue-900 text-white shadow-lg transform scale-105' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'"
-                                class="py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-200" x-text="m"></button>
-                        </template>
+                        <button @click="hasCondemned = true; generateSentence()" :class="hasCondemned ? 'bg-red-500 text-white border-red-500' : 'bg-gray-50 text-gray-700 border-gray-200'" class="py-2.5 rounded-lg font-bold text-sm border transition">SIM</button>
+                        <button @click="hasCondemned = false; clearCondemned()" :class="!hasCondemned ? 'bg-slate-700 text-white border-slate-700' : 'bg-gray-50 text-gray-700 border-gray-200'" class="py-2.5 rounded-lg font-bold text-sm border transition">NÃO</button>
                     </div>
                 </div>
 
-                <div>
-                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">2. Qual o ciclo?</h2>
-                    <div class="grid grid-cols-4 gap-3">
-                        <template x-for="c in [1, 2, 3, 4]" :key="c">
-                            <button @click="cycle = c"
-                                :class="cycle === c ? 'bg-red-600 text-white shadow-lg transform scale-105' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'"
-                                class="py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-200 flex flex-col items-center justify-center gap-1">
-                                <span class="text-lg" x-text="c + 'º'"></span>
-                                <span x-show="c === 4" class="uppercase tracking-wider opacity-90" style="font-size: 9px;">Overhaul</span>
-                                <span x-show="c !== 4" class="uppercase tracking-wider opacity-70" style="font-size: 9px;">Reparo</span>
-                            </button>
-                        </template>
+                <!-- Painel de Seleção das Peças Condenadas -->
+                <div x-show="hasCondemned" x-transition class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-4">
+                    <p class="text-sm font-bold text-gray-700">Selecione as Peças Condenadas:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Piston house (2-380)" x-model="selectedPieces" @change="generateSentence()" class="h-4 w-4 rounded text-red-500 focus:ring-red-500 border-gray-300">
+                            <span class="text-sm font-medium">Piston house (2-380)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Retaining Plate (1-60A)" x-model="selectedPieces" @change="generateSentence()" class="h-4 w-4 rounded text-red-500 focus:ring-red-500 border-gray-300">
+                            <span class="text-sm font-medium">Retaining Plate (1-60A)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Rear Plate (1-80A)" x-model="selectedPieces" @change="generateSentence()" class="h-4 w-4 rounded text-red-500 focus:ring-red-500 border-gray-300">
+                            <span class="text-sm font-medium">Rear Plate (1-80A)</span>
+                        </label>
                     </div>
-                </div>
 
-                <button @click="startApp()" :disabled="!model || !cycle"
-                    :class="(model && cycle) ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-300 cursor-not-allowed'"
-                    class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95">
-                    Avançar 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TELA 1.5: SELEÇÃO DE PROCESSO (NOVA TELA) -->
-    <div x-show="screen === 'processSelect'" x-cloak class="min-h-screen flex flex-col items-center">
-        <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col relative">
-            <div class="bg-blue-900 p-6 pt-8 text-white text-center shadow-md relative">
-                <button @click="screen = 'home'" class="absolute top-8 left-6 p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition transform active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                </button>
-                <h1 class="text-2xl font-black tracking-tight" x-text="model"></h1>
-                <p class="text-blue-200 text-xs font-semibold uppercase tracking-widest mt-1">
-                    <span x-text="cycle + 'º Ciclo '"></span><span x-text="cycle === 4 ? '(Overhaul)' : '(Reparo)'"></span>
-                </p>
-            </div>
-
-            <div class="flex-1 p-6 flex flex-col justify-center space-y-5 bg-gray-50">
-                <h2 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 text-center">Selecione o Fluxo de Trabalho:</h2>
-
-                <button @click="startProcess('desmontagem')" class="bg-white border-2 border-gray-200 p-6 rounded-3xl shadow-sm text-left hover:border-blue-500 hover:shadow-md transition-all group flex items-center justify-between transform active:scale-95">
-                    <div>
-                        <h3 class="text-xl font-black text-blue-900 group-hover:text-blue-700">Desmontagem</h3>
-                        <p class="text-sm font-medium text-gray-400 mt-1">Abertura, Drenagem e Documentação</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 group-hover:bg-blue-100 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                    </div>
-                </button>
-
-                <button @click="startProcess('inspecao')" class="bg-white border-2 border-gray-200 p-6 rounded-3xl shadow-sm text-left hover:border-green-500 hover:shadow-md transition-all group flex items-center justify-between transform active:scale-95">
-                    <div>
-                        <h3 class="text-xl font-black text-green-700 group-hover:text-green-600">Inspeção</h3>
-                        <p class="text-sm font-medium text-gray-400 mt-1">Metrologia, NDT e Cruzamento FRC</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-green-500 group-hover:bg-green-100 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                    </div>
-                </button>
-                
-                <button disabled class="bg-gray-100 border-2 border-gray-200 p-6 rounded-3xl text-left opacity-60 flex items-center justify-between cursor-not-allowed">
-                    <div>
-                        <h3 class="text-xl font-black text-gray-500">Montagem</h3>
-                        <p class="text-sm font-medium text-gray-400 mt-1">Procedimento em desenvolvimento...</p>
-                    </div>
-                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 12h6"/><path d="M12 9v6"/></svg>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TELA 2: GALERIA -->
-    <div x-show="screen === 'gallery'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
-        <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
-            <div class="flex items-center gap-4 mb-4">
-                <button @click="screen = 'home'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition transform active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                </button>
-                <div>
-                    <h1 class="font-black text-xl tracking-wide">Acervo de Ferramentas</h1>
-                    <p class="text-blue-200 text-xs uppercase tracking-widest font-semibold mt-1">Navegação Física</p>
-                </div>
-            </div>
-            
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
-                </div>
-                <input type="search" x-model="searchQuery" @input="if(searchQuery !== '') { activeTab = 'all'; selectedContainer = null; selectedSub = null; }" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-transparent rounded-xl bg-blue-950/50 placeholder-blue-300 focus:ring-blue-500 focus:border-blue-500 focus:bg-white focus:text-blue-900 transition-colors" placeholder="Pesquisar por nome ou P/N..." required>
-            </div>
-        </div>
-
-        <div x-show="searchQuery === ''" class="bg-white p-2 border-b flex gap-1 overflow-x-auto text-xs font-bold uppercase tracking-wider">
-            <button @click="activeTab = 'all'; selectedContainer = null; selectedSub = null" :class="activeTab === 'all' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Tudo</button>
-            <button @click="activeTab = 'caixas'; selectedContainer = null; selectedSub = null" :class="activeTab === 'caixas' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Caixas (1-9)</button>
-            <button @click="activeTab = 'carros'; selectedContainer = null; selectedSub = null" :class="activeTab === 'carros' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Carros</button>
-            <button @click="activeTab = 'armarios'; selectedContainer = null; selectedSub = null" :class="activeTab === 'armarios' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Armários</button>
-        </div>
-
-        <div x-show="searchQuery === '' && activeTab !== 'all'" class="p-4 space-y-2">
-            <div x-show="!selectedContainer" class="grid grid-cols-2 gap-2">
-                <template x-for="container in uniqueContainers" :key="container">
-                    <button @click="selectedContainer = container" class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-left font-bold text-blue-900 hover:bg-blue-50 transition-colors flex flex-col justify-between h-20">
-                        <span x-text="container"></span>
-                    </button>
-                </template>
-            </div>
-
-            <div x-show="selectedContainer && !selectedSub" class="space-y-2">
-                <button @click="selectedContainer = null" class="text-xs font-bold text-red-600 flex items-center gap-1 mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Voltar para lista
-                </button>
-                <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-xl font-bold text-blue-900 text-sm" x-text="selectedContainer"></div>
-                <template x-for="sub in uniqueSubLocations" :key="sub">
-                    <button @click="selectedSub = sub" class="w-full bg-white border border-gray-200 p-3.5 rounded-xl shadow-sm text-left font-semibold text-gray-700 hover:bg-gray-50 flex justify-between items-center transition-colors">
-                        <span x-text="sub"></span>
-                        <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                    </button>
-                </template>
-            </div>
-
-            <button x-show="selectedSub" @click="selectedSub = null" class="text-xs font-bold text-red-600 flex items-center gap-1 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Voltar para Gavetas
-            </button>
-        </div>
-
-        <div class="flex-1 p-4 pb-8 overflow-y-auto space-y-4">
-            
-            <div x-show="searchQuery === '' && selectedSub" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide mb-3">
-                Local: <span x-text="selectedContainer"></span> &gt; <span x-text="selectedSub"></span>
-            </div>
-
-            <template x-for="tool in filteredTools" :key="tool.code + tool.loc + tool.sub">
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-                    <div class="h-32 bg-gray-100 flex items-center justify-center p-2 border-b border-gray-100 relative">
-                        <img :src="tool.image && tool.image !== 'COLE_O_LINK_DO_IMGUR_AQUI' ? tool.image : 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=400'" alt="Tool" class="max-h-full object-contain mix-blend-multiply opacity-80">
-                        <div x-show="!tool.image || tool.image === 'COLE_O_LINK_DO_IMGUR_AQUI'" class="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-80">
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">Aguardando Foto</span>
+                    <!-- Input Campo Livre Híbrido -->
+                    <div class="pt-2 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Adicionar Outra Peça (Ex: Heat sink)</label>
+                        <div class="flex gap-2">
+                            <input type="text" x-model="customPiece" placeholder="Nome da peça e código" class="flex-grow border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-red-500">
+                            <button @click="addCustomPiece()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Inserir</button>
                         </div>
                     </div>
-                    <div class="p-4">
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" x-text="tool.name"></p>
-                        <h3 class="text-lg font-black text-blue-900" x-text="tool.code"></h3>
-                        <div class="bg-gray-50 border border-gray-100 p-2 rounded-lg flex items-center gap-2 mt-2">
-                            <svg class="text-orange-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <p class="text-xs font-medium text-gray-600">
-                                <span class="font-bold text-gray-900" x-text="tool.loc"></span> &bull; <span x-text="tool.sub"></span>
+
+                    <!-- Seleção do Motivo Técnico -->
+                    <div class="pt-2 border-t border-gray-100 space-y-2">
+                        <p class="text-sm font-bold text-gray-700">Qual foi o motivo da reprovação?</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="radio" name="reason" value="dimensional check" x-model="condemnedReason" @change="generateSentence()" class="text-red-500 focus:ring-red-500">
+                                <span class="text-sm font-medium">Dimensional Check (Metrologia)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="radio" name="reason" value="NDT inspection due to crack" x-model="condemnedReason" @change="generateSentence()" class="text-red-500 focus:ring-red-500">
+                                <span class="text-sm font-medium">NDT Inspection (Trinca / Crack)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ETAPA 5: FLUXO DE PINTURA E JATEAMENTO -->
+            <div x-show="currentStep === 5" class="space-y-4">
+                
+                <!-- Sub-módulo: Jateamento Prévio -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-2 text-slate-900">
+                        <span class="text-xl">🛠️</span>
+                        <h2 class="font-bold text-base">Jateamento Prévio das Peças</h2>
+                    </div>
+                    <div class="space-y-2.5 text-sm text-gray-600">
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Vá até o <strong>Armário 1</strong> e pegue o gabarito de jateamento do modelo do freio.</span>
+                        </label>
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Instale o gabarito protegendo perfeitamente os furos do <strong>Torque tube</strong>.</span>
+                        </label>
+                        <div class="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-800 font-medium">
+                            <strong>Poka-Yoke Restrito:</strong> As únicas peças autorizadas para jateamento são o <strong>Torque tube</strong> e a <strong>Retaining plate</strong>! Nenhuma outra deve entrar na cabine.
+                        </div>
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Execute o jateamento abrasivo completo das duas peças aprovadas.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sub-módulo: Processo MROSYS -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2 text-slate-900">
+                        <span class="text-xl">💻</span>
+                        <h2 class="font-bold text-base">Abertura de OSR no MROSYS</h2>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Passo Inicial</label>
+                            <p class="text-sm text-gray-600 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                                Na Home do MROSYS, clique em <strong>Abrir OSR</strong> e use o leitor de código de barras para bipar a OS Mãe (<strong>Tally Sheet</strong>).
                             </p>
                         </div>
-                    </div>
-                </div>
-            </template>
-            <div x-show="filteredTools.length === 0" class="text-center p-8 text-gray-400">
-                <p>Nenhuma ferramenta encontrada.</p>
-            </div>
-        </div>
-    </div>
 
-    <!-- TELA 3: CHECKLIST GERAL -->
-    <div x-show="screen === 'checklist'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
-        <div class="bg-blue-900 text-white p-4 pt-6 shadow-md sticky top-0 z-20">
-            <div class="flex items-center justify-between mb-6">
-                <button @click="screen = 'processSelect'" class="p-2 bg-blue-800 rounded-full hover:bg-blue-700 transition transform active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                </button>
-                <div class="text-center">
-                    <h1 class="font-black text-xl tracking-wide">
-                        <span x-text="model"></span> 
-                        <span class="text-sm text-blue-300 mx-1">-</span> 
-                        <span class="text-lg text-blue-100" x-text="process ? process.toUpperCase() : ''"></span>
-                    </h1>
-                    <p class="text-blue-200 text-xs uppercase tracking-widest font-semibold mt-1">
-                        <span x-text="cycle + 'º Ciclo '"></span><span x-text="cycle === 4 ? '(Overhaul)' : '(Reparo)'"></span>
-                    </p>
-                </div>
-                <div class="w-9"></div>
-            </div>
-
-            <!-- RÉGUA DINÂMICA DE ETAPAS -->
-            <div class="flex justify-between relative px-4">
-                <div class="absolute top-1/2 left-8 right-8 h-1 bg-blue-800 transform -translate-y-1/2 rounded-full"></div>
-                <template x-for="(name, index) in currentStepNames" :key="index">
-                    <div class="flex flex-col items-center gap-1 bg-blue-900 px-2 relative z-10">
-                        <div :class="step === index ? 'border-white bg-red-600 text-white shadow-lg' : (step > index ? 'border-green-400 bg-green-400 text-blue-900' : 'border-blue-800 bg-blue-900 text-blue-400')"
-                             class="w-10 h-10 rounded-full flex items-center justify-center border-4 transition-colors duration-300">
-                             <svg x-show="step > index" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                             <div x-show="step <= index" x-html="getStepIcon(index)"></div>
-                        </div>
-                    </div>
-                </template>
-            </div>
-            <div class="text-center mt-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-900 bg-opacity-50 py-1.5 mx-auto max-w-xs rounded-full" x-text="currentStepNames[step]"></div>
-        </div>
-
-        <div class="flex-1 p-5 pb-32 overflow-y-auto">
-            <p class="text-gray-500 text-sm font-semibold mb-4 text-center">Selecione a operação para visualizar os detalhes:</p>
-            <div class="space-y-4">
-                <template x-for="module in currentModules()" :key="module.id">
-                    <button @click="openModule(module)" 
-                        class="w-full flex justify-between items-center bg-white border border-gray-200 shadow-sm p-5 rounded-2xl text-blue-900 font-extrabold text-base uppercase tracking-wider transition-all transform hover:border-blue-300 active:scale-95 group">
-                        
-                        <div class="flex items-center gap-4 text-left">
-                            <div :class="isModuleComplete(module) ? 'bg-green-500 border-green-500 text-white' : 'bg-gray-50 border-gray-300 text-gray-300'" class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors">
-                                <svg x-show="isModuleComplete(module)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/></svg>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">P/N da Peça</label>
+                                <input type="text" placeholder="Vide CMM pág 10001" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm uppercase">
                             </div>
-                            <span x-text="module.title" :class="isModuleComplete(module) ? 'text-green-700' : ''"></span>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">S/N (Se houver)</label>
+                                <input type="text" placeholder="Obrigatório no Piston House" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm uppercase">
+                            </div>
                         </div>
-                        
-                        <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                            <svg class="w-5 h-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-1">Pos (NÃO PREENCHER)</label>
+                                <input type="text" disabled placeholder="Deixar em Branco" class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-sm placeholder-gray-400">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Quantidade</label>
+                                <input type="number" value="1" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                            </div>
                         </div>
-                    </button>
-                </template>
-            </div>
-        </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-2xl z-20">
-            <div class="max-w-md mx-auto flex justify-between gap-4">
-                <button @click="step = Math.max(0, step - 1)" :disabled="step === 0"
-                    :class="step === 0 ? 'bg-gray-50 text-gray-300 border border-gray-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 transform active:scale-95'"
-                    class="flex-1 py-4 px-4 rounded-2xl font-bold text-sm transition-all">
-                    Voltar
-                </button>
-                
-                <button x-show="step < currentStepNames.length - 1" @click="step = Math.min(currentStepNames.length - 1, step + 1)"
-                    :class="isStepComplete() ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-lg transform active:scale-95' : 'bg-blue-50 text-blue-300 border border-blue-100'"
-                    class="flex-none w-2/3 py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all">
-                    Avançar Etapa
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </button>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Oficina Destino</label>
+                            <input type="text" disabled value="QSCMY62 - Oficina de Pintura" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700">
+                        </div>
 
-                <button x-show="step === currentStepNames.length - 1" @click="finishApp()"
-                    :class="isStepComplete() ? 'bg-green-500 text-white shadow-lg transform active:scale-95' : 'bg-green-50 text-green-200 border border-green-100'"
-                    class="flex-none w-2/3 py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all">
-                    Finalizar OS 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TELA 4: MÓDULO INTERNO -->
-    <div x-show="screen === 'module'" x-cloak class="min-h-screen flex flex-col w-full max-w-md mx-auto bg-gray-50 relative shadow-2xl">
-        <div class="bg-white p-4 pt-6 shadow-sm sticky top-0 z-20 border-b border-gray-200">
-            <div class="flex items-center gap-4">
-                <button @click="closeModule()" class="p-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition transform active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                </button>
-                <div>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-widest" x-text="currentStepNames[step]"></p>
-                    <h2 class="text-lg font-black text-gray-800 leading-tight" x-text="activeModule?.title || ''"></h2>
+                        <!-- String de Engenharia Montada Automaticamente -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Motivo da Remoção (Copiar para o Sistema)</label>
+                            <div class="relative">
+                                <textarea readonly class="w-full bg-slate-900 text-emerald-400 font-mono text-[11px] p-2.5 rounded-lg h-24 focus:outline-none" x-text="buildRemovalReason()"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="flex-1 p-4 pb-32 overflow-y-auto space-y-4">
-            <template x-for="item in (activeModule?.items || [])" :key="item.id">
-                <div :class="checked[item.id] ? 'bg-green-50 border-green-500 transform scale-95 opacity-75' : (item.highlight === 'alert' ? 'bg-orange-50 bg-opacity-80 border-orange-300 shadow-sm' : (item.highlight === 'info' ? 'bg-blue-50 bg-opacity-80 border-blue-300 shadow-sm' : 'bg-white border-gray-200 shadow-sm'))"
-                     class="p-4 rounded-xl border-2 flex gap-4 items-start transition-all duration-200">
+                <!-- Sub-módulo: Guia Física Repair Request -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-2 text-slate-900">
+                        <span class="text-xl">📄</span>
+                        <h2 class="font-bold text-base">Preenchimento da Repair Request (Física)</h2>
+                    </div>
                     
-                    <div @click="toggleCheck(item.id)" :class="checked[item.id] ? 'bg-green-500 border-green-500' : 'border-gray-300 bg-gray-50'"
-                         class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors cursor-pointer">
-                        <svg x-show="checked[item.id]" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
-                    </div>
-
-                    <div class="flex-1 pt-0.5 flex flex-col gap-2">
-                        <p :class="checked[item.id] ? 'text-gray-500 line-through' : 'text-gray-800 font-semibold'" class="text-sm leading-snug">
-                            <svg x-show="item.highlight === 'alert' && !checked[item.id]" class="inline w-4 h-4 text-orange-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                            <svg x-show="item.highlight === 'info' && !checked[item.id]" class="inline w-4 h-4 text-blue-500 mr-1.5 mb-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                            <span x-text="item.text"></span>
-                        </p>
-
-                        <div class="flex flex-wrap items-center gap-2 mt-1">
-                            <template x-if="item.reference">
-                                <div class="flex gap-2 w-full mt-1">
-                                    <button @click="openModalImage(item.reference)" class="flex-1 inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
-                                        <svg style="width: 14px; height: 14px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        <span x-text="item.reference.btnText || 'Ver Referência'"></span>
-                                    </button>
-                                    
-                                    <button @click="openLocationModalByCode(item.reference.toolCode)" class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg border border-orange-200 hover:bg-orange-200 transition transform active:scale-95 shadow-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    </button>
-                                </div>
-                            </template>
-                            
-                            <template x-if="item.reference2">
-                                <div class="flex gap-2 w-full mt-1">
-                                    <button @click="openModalImage(item.reference2)" class="flex-1 inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
-                                        <svg style="width: 14px; height: 14px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        <span x-text="item.reference2.btnText || 'Ver Referência'"></span>
-                                    </button>
-                                    
-                                    <button @click="openLocationModalByCode(item.reference2.toolCode)" class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg border border-orange-200 hover:bg-orange-200 transition transform active:scale-95 shadow-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    </button>
-                                </div>
-                            </template>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-gray-200 space-y-1">
+                            <span class="text-xs font-bold text-slate-500 uppercase block">Lado Esquerdo (Shop 01)</span>
+                            <p class="font-mono text-xs font-bold text-slate-800">• Ofic: QSCMY62 - OFICINA PINTURA</p>
+                            <p class="font-mono text-xs font-bold text-slate-800">• Work: PERFORM THE PAINTING IAW CMM-32-47-61</p>
+                            <p class="font-mono text-xs font-bold text-slate-800">• ID Plate: 09</p>
                         </div>
+                        <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg text-xs text-amber-900 font-medium">
+                            <strong>Auditoria Poka-Yoke (Lado Direito):</strong> Se o campo <em>Description</em> impresso pelo MROSYS estiver vazio, corrija manualmente à caneta escrevendo a nomenclatura oficial (Ex: <code>PLATE, RETAINING</code>).
+                        </div>
+                        <label class="flex items-start space-x-3 p-1 pt-2">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Despache as peças com a guia física anexada para a Pintura.</span>
+                        </label>
                     </div>
                 </div>
-            </template>
-        </div>
-
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-2xl z-20">
-            <div class="max-w-md mx-auto">
-                <button @click="closeModule()"
-                    :class="isModuleComplete(activeModule) ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-lg' : 'bg-gray-200 text-gray-700'"
-                    class="w-full py-4 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all transform active:scale-95">
-                    <span x-text="isModuleComplete(activeModule) ? 'Módulo Concluído - Voltar' : 'Voltar para Lista'"></span>
-                    <svg x-show="isModuleComplete(activeModule)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/></svg>
-                </button>
             </div>
-        </div>
+
+            <!-- ETAPA 6: FECHAMENTO TÉCNICO DA OS (FRC) -->
+            <div x-show="currentStep === 6" class="space-y-4">
+                
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-2 text-slate-900">
+                        <span class="text-xl">🖋️</span>
+                        <h2 class="font-bold text-base">Encerramento da Capa do FRC (Pág 1)</h2>
+                    </div>
+
+                    <!-- Exibição Condicional dos Findings Conforme Etapa 4 -->
+                    <div class="space-y-2">
+                        <span class="block text-xs font-bold text-gray-500 uppercase">Seção "Progressive Inspection / Findings"</span>
+                        
+                        <template x-if="!hasCondemned">
+                            <div class="p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800">
+                                ✨ Nenhuma peça foi condenada neste ciclo. Proceder com o encerramento regular e carimbo de aprovação da auditoria técnica.
+                            </div>
+                        </template>
+
+                        <template x-if="hasCondemned">
+                            <div class="space-y-2">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <span class="block text-xs font-bold text-blue-600 uppercase mb-1">Texto de Engenharia Gerado (Editável se precisar):</span>
+                                    <textarea x-model="findingsSentence" class="w-full bg-white border border-blue-300 rounded-lg p-2 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500 h-20"></textarea>
+                                </div>
+                                <div class="text-xs text-slate-500 italic px-1 flex items-center space-x-1">
+                                    <span>💡</span>
+                                    <span>Escreva a frase acima exatamente como está na seção de Findings do FRC.</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Checklist de Fechamento Físico -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
+                    <p class="text-sm font-bold text-gray-700">Verificações Finais de Auditoria:</p>
+                    <div class="space-y-2.5 text-sm text-gray-600">
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Marque a caixa de seleção <strong>"Findings"</strong> na folha do FRC se houver reprovação.</span>
+                        </label>
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Aplique o <strong>Carimbo Oficial LATAM</strong> na capa do processo.</span>
+                        </label>
+                        <label class="flex items-start space-x-3 p-1">
+                            <input type="checkbox" class="mt-0.5 h-4 w-4 rounded text-cyan-600 focus:ring-cyan-500 border-gray-300">
+                            <span>Assine, rubrique e insira a data corrente ao lado da justificativa técnica.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botão de Sucesso Final -->
+                <div class="pt-2">
+                    <button @click="alert('Ordem de Serviço Encerrada no Sistema com Sucesso!')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow transition text-center block text-sm">
+                        CONCLUIR E SALVAR O.S.
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
+        <footer class="bg-gray-50 border-t border-gray-200 p-4 grid grid-cols-2 gap-3 sticky bottom-0 z-50">
+            <button 
+                @click="prevStep()" 
+                :disabled="currentStep === 4" 
+                :class="currentStep === 4 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'"
+                class="bg-white border border-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition text-sm">
+                Voltar
+            </button>
+            <button 
+                @click="nextStep()" 
+                x-text="currentStep === 6 ? 'Finalizado' : 'Avançar'"
+                :disabled="currentStep === 6"
+                :class="currentStep === 6 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-cyan-600 hover:bg-cyan-500 text-white'"
+                class="font-bold py-2.5 px-4 rounded-xl shadow transition text-sm text-center">
+                Avançar
+            </button>
+        </footer>
+
     </div>
 
-    <!-- TELA MODAL REFERÊNCIAS -->
-    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300" style="background-color: rgba(15, 23, 42, 0.8);" @click.self="closeModalImage()">
-        <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col" style="max-height: 85vh;">
-            <div class="bg-gray-900 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                    <span class="font-extrabold text-xs uppercase tracking-widest text-gray-300">Apoio Visual / Tool</span>
-                </div>
-                <button @click="closeModalImage()" class="p-1 text-gray-400 hover:text-white rounded-full bg-gray-800 transition shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-4 bg-gray-100 flex flex-col items-center justify-center" style="min-height: 250px;">
-                <img :src="modalData.imgUrl" class="max-w-full object-contain rounded-xl shadow-md border border-gray-200 bg-white" style="max-height: 40vh;" alt="Referência Técnica">
-            </div>
-            
-            <div class="bg-white p-4 border-t border-gray-200 space-y-2">
-                <div class="flex flex-col gap-2 text-xs">
-                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 w-full">
-                        <p class="text-gray-400 font-bold uppercase tracking-wider mb-1" style="font-size: 9px;">Manual Ref.</p>
-                        <p class="text-gray-800 font-bold leading-relaxed break-words" x-text="modalData.manualPage"></p>
-                    </div>
-                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 w-full">
-                        <p class="text-blue-500 font-bold uppercase tracking-wider mb-1" style="font-size: 9px;">CMM Tool / Part</p>
-                        <p class="text-blue-900 font-black leading-relaxed break-words" x-text="modalData.toolCode"></p>
-                    </div>
-                </div>
-                <button @click="closeModalImage()" class="w-full py-3 mt-3 bg-blue-900 text-white font-bold text-sm rounded-xl hover:bg-blue-800 transition shadow-sm">
-                    Fechar Referência
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- CONTROLADOR JAVASCRIPT COM ALPINE.JS -->
+    <script>
+        function brakeApp() {
+            return {
+                // Estados de Navegação
+                currentStep: 4,
+                stepTitles: {
+                    4: "Red Tag e Evidências",
+                    5: "Fluxo de Pintura & OSR",
+                    6: "Fechamento Técnico FRC"
+                },
 
+                // Estados do Módulo Red Tag
+                hasCondemned: false,
+                selectedPieces: [],
+                customPiece: '',
+                condemnedReason: 'dimensional check',
+                findingsSentence: '',
+
+                // Avançar e Voltar Telas
+                nextStep() {
+                    if (this.currentStep < 6) this.currentStep++;
+                },
+                prevStep() {
+                    if (this.currentStep > 4) this.currentStep--;
+                },
+
+                // Insere nova peça digitada na lista de checagem
+                addCustomPiece() {
+                    if (this.customPiece.trim() !== '') {
+                        this.selectedPieces.push(this.customPiece.trim());
+                        this.customPiece = '';
+                        this.generateSentence();
+                    }
+                },
+
+                // Limpa seleções se o técnico mudar para "Não houve peças condenadas"
+                clearCondemned() {
+                    this.selectedPieces = [];
+                    this.customPiece = '';
+                    this.findingsSentence = '';
+                },
+
+                // Motor Gramatical Híbrido Dinâmico (Montagem da Frase Técnica)
+                generateSentence() {
+                    if (this.selectedPieces.length === 0) {
+                        this.findingsSentence = "";
+                        return;
+                    }
+
+                    let itemsText = "";
+                    if (this.selectedPieces.length === 1) {
+                        itemsText = this.selectedPieces[0];
+                    } else {
+                        // Junta com vírgulas e adiciona o "and" antes do último item
+                        const lastItem = this.selectedPieces[this.selectedPieces.length - 1];
+                        const otherItems = this.selectedPieces.slice(0, -1).join(", ");
+                        itemsText = `${otherItems} and ${lastItem}`;
+                    }
+
+                    // Define se a estrutura pede plural (were) ou singular omisso/direto
+                    if (this.selectedPieces.length > 1) {
+                        this.findingsSentence = `${itemsText} were condemned during ${this.condemnedReason}`;
+                    } else {
+                        this.findingsSentence = `${itemsText} condemned during ${this.condemnedReason}`;
+                    }
+                },
+
+                // Construtor Automático da String do Motivo da Remoção (OSR MROSYS)
+                buildRemovalReason() {
+                    // Simulação dinâmica capturando dados que viriam do leitor
+                    return `Major Assy Barcode: T00X5JVE - Major Assy S/N: 09360 - Identification Plate: 09 - Opening Date: JUN. 23, 2026`;
+                }
+            }
+        }
+    </script>
 </body>
 </html>
