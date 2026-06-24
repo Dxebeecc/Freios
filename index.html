@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Setup LATAM - Freios (Módulos)</title>
+    <title>Setup LATAM - Freios</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         [x-cloak] { display: none !important; }
-        /* Suaviza as transições de barra de rolagem */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -29,7 +28,7 @@
                 activeModule: null, 
                 checked: {},
                 modalOpen: false,
-                modalData: { imgUrl: '', manualPage: '', toolCode: '' },
+                modalData: { imgUrl: '', manualPage: '', toolCode: '', location: '' },
 
                 // --- ESTADOS DA GALERIA ---
                 searchQuery: '',
@@ -37,77 +36,57 @@
                 selectedContainer: null,
                 selectedSub: null,
 
-                // --- ESTADOS: RED TAG (ETAPA 4) ---
+                // --- ESTADOS: RED TAG & OSR ---
                 hasCondemned: false,
                 selectedPieces: [],
                 customPiece: '',
                 condemnedReason: 'dimensional check',
                 findingsSentence: '',
-
-                // --- ESTADOS: OSR / MROSYS (ETAPA 5) ---
                 tallyBarcode: '',
                 snPiece: '',
                 idPlate: '',
 
-                // --- BANCO DE DADOS DE FERRAMENTAS ---
-                toolsList: [
-                    // CAIXA 1
-                    { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: 'https://i.imgur.com/UOUvSSN.jpeg', special: true },
-                    { name: 'Compression Tool (A320)', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Installation Cone 1', code: 'Q47964-1-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Installation Cone 2', code: 'Q47965-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Spatula (Espátula)', code: '89901-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Adaptação 3/4 Válvula Fitting Assembly', code: 'MY18011-T', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 3/4', code: 'MY46SQ085', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Extensor', code: 'MY46EX055', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Braço de Torque', code: 'MY46BF007', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Macete', code: 'MY46MA002', cat: 'caixas', loc: 'Caixa 1', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 1/4', code: 'MY46SQ238', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Corte', code: 'MY46AL052', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Freno', code: 'MY46AL050', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 2', image: '' },
-                    { name: 'Chave Combinada 3/8', code: 'MY46CC030', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 3', image: '' },
-                    { name: 'Alicate para Anel Trava (Beta)', code: 'MY46AL079', cat: 'caixas', loc: 'Caixa 1', sub: 'Gaveta 4', image: '' },
+                // --- BANCO DE DADOS EM NUVEM (GOOGLE SHEETS) ---
+                toolsList: [],
+                isLoadingDb: true,
 
-                    // CAIXA 2
-                    { name: 'Adaptor (Special Tool)', code: 'Q47963-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: 'https://i.imgur.com/UOUvSSN.jpeg', special: true },
-                    { name: 'Compression Tool', code: 'F26693000-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Spatula (Espátula)', code: '89901-T', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Soquete 13/16', code: 'MY46SQ029', cat: 'caixas', loc: 'Caixa 2', sub: 'Compartimento Superior', image: '' },
-                    { name: 'Alicate para Anel (Beta)', code: 'MY46AL052', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 1', image: '' },
-                    { name: 'Alicate de Freno', code: 'MY46AL068', cat: 'caixas', loc: 'Caixa 2', sub: 'Gaveta 2', image: '' },
+                async init() {
+                    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHBw7M7f58VdQOb22lLEl6759ApiWB0fFHdqU1I8p45seWfxR7C-_X5tBGmTw4-ErnJaurfch2v3Bw/pub?gid=1418929880&single=true&output=csv';
+                    try {
+                        const response = await fetch(csvUrl);
+                        if (!response.ok) throw new Error("Erro de rede");
+                        const csvText = await response.text();
+                        this.parsePlanilha(csvText);
+                    } catch (erro) {
+                        console.error("Erro ao sincronizar BD:", erro);
+                        alert("Aviso: Falha ao baixar o acervo de ferramentas. Verifique a internet.");
+                    } finally {
+                        this.isLoadingDb = false;
+                    }
+                },
 
-                    // CARRO 1
-                    { name: 'Testador de Molas', code: 'EQ0003', cat: 'carros', loc: 'Carro 1', sub: 'Parte Superior', image: '' },
-                    { name: 'Base de Apoio - Freios A320', code: 'MY46063-T', cat: 'carros', loc: 'Carro 1', sub: 'Parte Superior', image: '', special: true },
-                    { name: 'Calibration Block', code: 'CBS001-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta A', image: '' },
-                    { name: 'Paquímetro', code: 'PA9887S', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta A', image: '' },
-                    { name: 'Jogo de Soquetes', code: 'SQJO001', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta B', image: '' },
-                    { name: 'Ferramenta Desmontagem A320/B777', code: 'MY18027-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: '', special: true },
-                    { name: 'Tool (Insulator Assy B777)', code: 'F27701000-T', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: 'https://i.imgur.com/reDKB9A.jpeg', special: true },
-                    { name: 'Spring Removal/Install (B777)', code: 'R47163', cat: 'carros', loc: 'Carro 1', sub: 'Gaveta D', image: 'https://i.imgur.com/n85AF4P.jpeg', special: true },
-
-                    // CARRO 2
-                    { name: 'Spanner (Canecas B777)', code: 'R47166', cat: 'carros', loc: 'Carro 2', sub: 'Gaveta A', image: 'https://i.imgur.com/w9Fjg8u.jpeg' },
-                    { name: 'Riveting Tool (A320)', code: 'AC21826000-1-T', cat: 'carros', loc: 'Carro 2', sub: 'Em Cima', image: '' },
-
-                    // CARRO 8
-                    { name: 'Shrinking Bush (Kit F26692000-T)', code: 'R46105-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta A', image: '', special: true },
-                    { name: 'Half Shell (Kit F26692000-T)', code: 'R46103-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta A', image: '', special: true },
-                    { name: 'Piston Installation Support Tool 7', code: '114-325-T', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta B', image: '', special: true },
-                    { name: 'Spring Removal/Install (B777)', code: 'R47163', cat: 'carros', loc: 'Carro 8', sub: 'Gaveta E', image: 'https://i.imgur.com/n85AF4P.jpeg', special: true },
-
-                    // ARMÁRIOS 1 E 2
-                    { name: 'Caneta Pneumática', code: 'MY46CPN001', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira A', image: '' },
-                    { name: 'Relógio Comparador', code: 'RC0248', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira A', image: '' },
-                    { name: 'Torquímetro 50-250 LBF.FT', code: 'TO0290', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira B', image: '' },
-                    { name: 'Ferramenta de Fixação dos Bolts A320/A321', code: 'MY46037-T', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira C', image: '', special: true },
-                    { name: 'Proteção p/ Jateamento de Pistões', code: 'MY46048-T', cat: 'armarios', loc: 'Armário 2', sub: 'Prateleira D', image: '', special: true },
-
-                    // FROTAS ESPECIAIS: B787 e A350
-                    { name: 'Tool, Brake Assembly (B787-9/10)', code: 'F28014000-T', cat: 'frotas', loc: 'Carro B787 - 9/10', sub: 'Parte Superior', image: '', special: true },
-                    { name: 'EBA Carrier Guide (B787-9/10)', code: 'GS47892', cat: 'frotas', loc: 'Carro B787 - 9/10', sub: 'Caixa 2', image: '', special: true },
-                    { name: 'Compression Tool (A350)', code: 'T45811', cat: 'frotas', loc: 'Palete A350', sub: 'Caixa 3', image: '', special: true }
-                ],
+                parsePlanilha(csvText) {
+                    const linhas = csvText.split(/\r?\n/);
+                    const ferramentas = [];
+                    const regexCSV = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+                    
+                    for (let i = 1; i < linhas.length; i++) {
+                        if (!linhas[i].trim()) continue;
+                        const colunas = linhas[i].split(regexCSV).map(c => c.replace(/^"|"$/g, '').trim());
+                        
+                        ferramentas.push({
+                            id: i,
+                            name: colunas[0] || 'N/A',
+                            code: colunas[1] || 'N/A',
+                            cat: (colunas[2] || 'Sem Categoria').toLowerCase(),
+                            loc: colunas[3] || 'Sem Móvel',
+                            sub: colunas[4] || 'Sem Divisão',
+                            image: colunas[5] || '', 
+                            special: colunas[6] && colunas[6].toUpperCase() === 'VERDADEIRO'
+                        });
+                    }
+                    this.toolsList = ferramentas;
+                },
 
                 // --- FUNÇÕES DA GALERIA ---
                 get filteredTools() {
@@ -129,12 +108,12 @@
                 },
                 get uniqueContainers() {
                     const filtered = this.toolsList.filter(t => t.cat === this.activeTab);
-                    return [...new Set(filtered.map(t => t.loc))];
+                    return [...new Set(filtered.map(t => t.loc))].filter(Boolean).sort();
                 },
                 get uniqueSubLocations() {
                     if (!this.selectedContainer) return [];
                     const filtered = this.toolsList.filter(t => t.loc === this.selectedContainer);
-                    return [...new Set(filtered.map(t => t.sub))];
+                    return [...new Set(filtered.map(t => t.sub))].filter(Boolean).sort();
                 },
                 openLocationModalByCode(code) {
                     if(!code) return;
@@ -145,20 +124,40 @@
                         this.searchQuery = tool.code;
                         window.scrollTo(0, 0);
                     } else {
-                        alert("Ferramenta mapeada na caixa padrão da oficina.");
+                        alert("Ferramenta não encontrada no Acervo Digital.");
                     }
                 },
 
-                // --- ROTEAMENTO E CONTROLES ---
-                get currentStepNames() {
-                    if (this.process === 'inspecao') {
-                        return ['Limpeza NDT', 'Metrologia', 'Auditoria NDT', 'Red Tag', 'Pintura & OSR', 'Fechamento'];
+                // --- MODAL DINÂMICO (PUXA FOTO E LOCAL DO BD) ---
+                openModalImage(refData) {
+                    let dynamicImg = '';
+                    let dynamicLoc = '';
+                    
+                    if (refData.toolCode) {
+                        const cleanCode = refData.toolCode.replace('-T', '').split(' / ')[0].trim().toLowerCase();
+                        const tool = this.toolsList.find(t => t.code.toLowerCase().includes(cleanCode));
+                        if (tool) {
+                            if(tool.image && tool.image !== 'COLE_O_LINK_DO_IMGUR_AQUI') dynamicImg = tool.image;
+                            dynamicLoc = `${tool.loc} > ${tool.sub}`;
+                        }
                     }
+                    
+                    this.modalData = {
+                        ...refData,
+                        imgUrl: dynamicImg || refData.imgUrl || 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=400',
+                        location: dynamicLoc || 'Consulte Acervo Físico'
+                    };
+                    this.modalOpen = true;
+                },
+                closeModalImage() { this.modalOpen = false; },
+
+                // --- ROTEAMENTO ---
+                get currentStepNames() {
+                    if (this.process === 'inspecao') return ['Limpeza NDT', 'Metrologia', 'Auditoria NDT', 'Red Tag', 'Pintura & OSR', 'Fechamento'];
                     return ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'];
                 },
-
                 startApp() {
-                    if(this.model && this.cycle) {
+                    if(this.model && this.cycle && !this.isLoadingDb) {
                         this.screen = 'processSelect';
                         window.scrollTo(0, 0);
                     }
@@ -168,8 +167,6 @@
                     this.screen = 'checklist';
                     this.step = 0;
                     this.checked = {};
-                    
-                    // Reset dos estados dinâmicos
                     this.hasCondemned = false;
                     this.selectedPieces = [];
                     this.customPiece = '';
@@ -177,7 +174,6 @@
                     this.tallyBarcode = '';
                     this.snPiece = '';
                     this.idPlate = '';
-
                     window.scrollTo(0, 0);
                 },
                 openGallery() {
@@ -208,16 +204,7 @@
                     this.screen = 'checklist';
                     window.scrollTo(0, 0);
                 },
-                toggleCheck(id) {
-                    this.checked[id] = !this.checked[id];
-                },
-                openModalImage(refData) {
-                    this.modalData = refData;
-                    this.modalOpen = true;
-                },
-                closeModalImage() {
-                    this.modalOpen = false;
-                },
+                toggleCheck(id) { this.checked[id] = !this.checked[id]; },
                 isModuleComplete(module) {
                     if(!module || !module.items) return false;
                     return module.items.every(item => this.checked[item.id]);
@@ -236,12 +223,12 @@
 
                 getStepIcon(index) {
                     const icons = [
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/></svg>',
-                        '<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>'
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/></svg>',
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>'
                     ];
                     return icons[index];
                 },
@@ -316,14 +303,14 @@
 
                         let drenagemItems = [];
                         if (isB777) {
-                            drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável e perigoso.', highlight: 'alert' });
+                            drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável.', highlight: 'alert' });
                             drenagemItems.push({ id: 'dren_b2', text: 'Desapertar e remover o parafuso (1-350) e a anilha de sangria (1-360).' });
-                            let drenoRef = isOverhaul ? { btnText: 'Ref. Conexão', imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg', manualPage: 'CMM Ref (Verificar CMM)', toolCode: 'Conexão Hidráulica B777' } : null;
+                            let drenoRef = isOverhaul ? { btnText: 'Ref. Conexão', toolCode: 'Conexão Hidráulica B777' } : null;
                             drenagemItems.push({ id: 'dren_b3', text: 'Conectar a mangueira de dreno (ponta fina) e abaixar as canelas dos 6 pistões.', highlight: 'info', reference: drenoRef });
-                            drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380) com torque de 6,8 N.m (60.19 lbf.in).', highlight: 'alert' });
+                            drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380).', highlight: 'alert' });
                         } else {
                             drenagemItems.push({ id: 'dren_a1', text: 'AVISO: Usar equipamento de proteção (EPI) para pele e olhos. O fluido hidráulico é inflamável.', highlight: 'alert' });
-                            drenagemItems.push({ id: 'dren_a2', text: 'Conectar a mangueira de dreno na conexão/válvula de sangria e direcionar a outra ponta para o recipiente adequado.' });
+                            drenagemItems.push({ id: 'dren_a2', text: 'Conectar a mangueira de dreno na conexão/válvula de sangria.' });
                             drenagemItems.push({ id: 'dren_a3', text: 'Empurrar ("apertar") os pistões para baixo forçando a descida e esvaziamento.' });
                             drenagemItems.push({ id: 'dren_a4', text: 'DICA: Trocar a válvula para drenar os 7 pistões do conjunto oposto.', highlight: 'info' });
                         }
@@ -333,7 +320,7 @@
                             if (isOverhaul) torqueTubeItems.push({ id: 'tt_b1', text: 'OVERHAUL: Encaminhar unido. Verificar pág 5000 para envio ao NDT.', highlight: 'info' });
                             else torqueTubeItems.push({ id: 'tt_b2', text: 'Nenhuma ação de desmontagem requerida.' });
                         } else {
-                            torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Separar e fixar na bancada SOMENTE o Piston House para abrir.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House alinhados na horizontal.', highlight: 'info' });
+                            torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Separar SOMENTE o Piston House para abrir.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House alinhados na horizontal.', highlight: 'info' });
                             torqueTubeItems.push({ id: 'desm_2', text: 'Usar Soquete 5/16" com extensor longo e catraca para fixação principal.' });
                             torqueTubeItems.push({ id: 'desm_3', text: 'Usar Parafusadeira pneumática para remover os 3 parafusos maiores.' });
                             if (isOverhaul) torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL: Levar Torque Tube à prensa hidráulica para a remoção dos pinos.', highlight: 'alert' });
@@ -342,10 +329,16 @@
                         let pistonHouseItems = [];
                         if (isB777) {
                             pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO: Não empurrar os pistões para dentro das camisas enquanto instalados.', highlight: 'alert' });
-                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa. Remover todas as conexões.', highlight: 'alert' });
+                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_b_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico.', highlight: 'info', reference: { btnText: 'Ref. Conexão B777', toolCode: 'Conexão Hidráulica B777' } });
+                            pistonHouseItems.push({ id: 'ph_b_insulator', text: 'Remover o "insulator assembly" usando a ferramenta F27701000.', reference: { btnText: 'Ref. Tool F27701000', manualPage: 'Page 3009', toolCode: 'F27701000-T' } });
+                            pistonHouseItems.push({ id: 'ph_b_sleeve', text: 'Desrosquear as canecas utilizando a ferramenta R47166.', reference: { btnText: 'Ref. Tool R47166', manualPage: 'Page 3009', toolCode: 'R47166' } });
+                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa.', highlight: 'alert' });
+                            pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE: Descartar TODOS os anéis de vedação no lixo.', highlight: 'alert' });
+                            pistonHouseItems.push({ id: 'ph_b_spring', text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163.', highlight: 'info', reference: { btnText: 'Ref. Ferramentas', manualPage: 'Page 3010', toolCode: 'R47163' } });
                         } else {
+                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_a32x_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico.', highlight: 'info', reference: { btnText: 'Ref. Conexão A32X', toolCode: 'Conexão Hidráulica A32X' } });
                             pistonHouseItems.push({ id: 'desm_4', text: 'Usar Soquete 1/4" para soltar com cuidado os parafusos de retenção do tubinho.' });
-                            pistonHouseItems.push({ id: 'desm_sleeve_a32x', text: 'Desrosquear e remover as canecas utilizando a ferramenta especial Adaptador (Q47963).', highlight: 'info' });
+                            pistonHouseItems.push({ id: 'desm_sleeve_a32x', text: 'Desrosquear e remover as canecas utilizando a ferramenta especial Adaptador (Q47963).', highlight: 'info', reference: { btnText: 'Ref. Ferramenta (Q47963)', manualPage: 'CMM Page 3010', toolCode: 'Q47963-T' } });
                             pistonHouseItems.push({ id: 'desm_pistao_a32x', text: 'Remover o pistão. Cortar e descartar a vedação externa.', highlight: 'info' });
                             if (isA321) {
                                 pistonHouseItems.push({ id: 'desm_5', text: 'Peça 160 (Bushing) e Peça 170 (Trava): SALVAR AMBAS no saco plástico.', highlight: 'info' });
@@ -371,11 +364,8 @@
                         ];
 
                         let despachoItems = [];
-                        if (isB777) {
-                            despachoItems.push({ id: 'fin_1_b', text: 'FLUXO MATERIAL: Movimentar os conjuntos laváveis para Limpeza Técnica 2.' });
-                        } else {
-                            despachoItems.push({ id: 'fin_1', text: isA321 ? 'FLUXO MATERIAL A321: Enviar apenas Piston House + Repair Request.' : 'FLUXO A320: Enviar conjunto completo para Limpeza.' });
-                        }
+                        if (isB777) despachoItems.push({ id: 'fin_1_b', text: 'FLUXO MATERIAL: Movimentar os conjuntos laváveis para Limpeza Técnica 2.' });
+                        else despachoItems.push({ id: 'fin_1', text: isA321 ? 'FLUXO MATERIAL A321: Enviar apenas Piston House + Repair Request.' : 'FLUXO A320: Enviar conjunto completo para Limpeza.' });
                         despachoItems.push({ id: 'fin_4', text: 'BAIXA OPERACIONAL: Realizar a baixa técnica definitiva no Mysys.' });
 
                         stepsData[3] = [{ id: 'fin_mod', title: 'Destinos e Sistema', items: despachoItems }];
@@ -384,55 +374,45 @@
                     // TRILHA 2: INSPEÇÃO (OVERHAUL)
                     // ==========================================
                     } else if (this.process === 'inspecao') {
-                        
                         if (isOverhaul) {
-                            // ETAPA 0: LIMPEZA PÓS-NDT
                             stepsData[0] = [
                                 { id: 'insp_clean', title: 'Descontaminação Crítica', items: [
-                                    { id: 'insp_c1', text: 'Banho Químico: Imergir Piston Housing, Torque Tube, Retaining Plate, Rear Plate, pinos e parafusos no fluido para remover resíduos do NDT.' },
+                                    { id: 'insp_c1', text: 'Banho Químico: Imergir Piston Housing, Torque Tube, Retaining Plate, Rear Plate, pinos e parafusos no fluido.' },
                                     { id: 'insp_c2', text: 'Ação Mecânica: Solicitar o jato de limpeza, desobstruindo roscas e cavidades cegas.' },
-                                    { id: 'insp_c3', text: 'SECAGEM (POKA-YOKE): Aplicar ar comprimido IMEDIATAMENTE no Torque Tube e peças de aço de liga. Prioridade absoluta para bloquear risco de oxidação.', highlight: 'alert' }
+                                    { id: 'insp_c3', text: 'SECAGEM (POKA-YOKE): Aplicar ar comprimido IMEDIATAMENTE no Torque Tube e peças escuras.', highlight: 'alert' }
                                 ]}
                             ];
-
-                            // ETAPA 1: DIMENSIONAL (FRC Pag 9)
                             stepsData[1] = [
                                 { id: 'insp_dim_piston', title: 'Piston Housing (2-380)', items: [
                                     { id: 'insp_d1', text: 'Ferramenta: Imicro 50-63mm.', highlight: 'info' },
                                     { id: 'insp_d2', text: 'Tolerância Máxima permitida: 50,846 mm.', highlight: 'alert' },
-                                    { id: 'insp_d3', text: 'Medir as 14 cavidades (furos das canecas) e anotar os valores exatos nas colunas 1 a 14 da seção "Measured value" na Pág 9 do FRC.' }
+                                    { id: 'insp_d3', text: 'Medir as 14 cavidades (furos das canecas) e anotar os valores exatos na Pág 9 do FRC.' }
                                 ]},
                                 { id: 'insp_dim_torque', title: 'Torque Tube (1-310)', items: [
                                     { id: 'insp_d4', text: 'Ferramenta: Micrômetro interno apropriado.', highlight: 'info' },
                                     { id: 'insp_d5', text: 'Tolerância exigida: 22,00 a 22,021 mm.', highlight: 'alert' },
-                                    { id: 'insp_d6', text: 'Medir os 9 furos de alojamento dos pinos e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' }
+                                    { id: 'insp_d6', text: 'Medir os 9 furos de alojamento dos pinos e anotar os valores na Pág 9.' }
                                 ]},
                                 { id: 'insp_dim_pinos', title: 'Pinos (1-370)', items: [
                                     { id: 'insp_d7', text: 'Ferramenta: Micrômetro externo de precisão.', highlight: 'info' },
                                     { id: 'insp_d8', text: 'Tolerância exigida: 22,041 a 22,054 mm.', highlight: 'alert' },
-                                    { id: 'insp_d9', text: 'Medir os 9 pinos de torque e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' }
+                                    { id: 'insp_d9', text: 'Medir os 9 pinos de torque e anotar os valores na Pág 9.' }
                                 ]}
                             ];
-
-                            // ETAPA 2: NDT E FRC
                             stepsData[2] = [
                                 { id: 'insp_ndt', title: 'Auditoria de Laudos', items: [
-                                    { id: 'insp_n1', text: 'Posicionar o Laudo NDT (Ex: W3558/26) lado a lado com as Páginas 3 e 6 do formulário FRC.' },
-                                    { id: 'insp_n2', text: 'Buscar a peça no NDT. Se o "Result" constar "A" (Approved) ou "R" (Rejected), marque com "X" a respectiva coluna "Approved? Yes/No" no FRC.' },
-                                    { id: 'insp_n3', text: 'CHANCELA OFICIAL: Imediatamente após assinalar, aplique no campo "Performed by" o Carimbo LATAM, a Data corrente e a Rubrica.', highlight: 'alert' },
-                                    { id: 'insp_n4', text: 'Atenção: Assine ESTRITAMENTE as linhas referentes à validação do NDT. Não sobrescreva as inspeções visuais realizadas por outros inspetores.', highlight: 'info' }
+                                    { id: 'insp_n1', text: 'Posicionar o Laudo NDT lado a lado com as Páginas 3 e 6 do formulário FRC.' },
+                                    { id: 'insp_n2', text: 'Marcar com "X" a coluna "Approved? Yes/No" no FRC baseado no "Result" do NDT.' },
+                                    { id: 'insp_n3', text: 'CHANCELA OFICIAL: Aplicar no campo "Performed by" o Carimbo LATAM, Data e Rubrica.', highlight: 'alert' },
+                                    { id: 'insp_n4', text: 'Atenção: Assine ESTRITAMENTE as linhas referentes à validação do NDT.', highlight: 'info' }
                                 ]}
                             ];
-
-                            // ETAPA 3: RED TAG (MÓDULO CUSTOMIZADO)
                             stepsData[3] = [
                                 { id: 'insp_redtag', title: 'Emissão de Material Condenado', items: [
                                     { id: 'rt_ui', type: 'red_tag_ui' },
                                     { id: 'rt_confirm', text: 'Confirmo a avaliação de material condenado nesta OS.', highlight: 'info' }
                                 ]}
                             ];
-
-                            // ETAPA 4: PINTURA E OSR (MÓDULO CUSTOMIZADO)
                             stepsData[4] = [
                                 { id: 'insp_jateamento', title: 'Jateamento Prévio', items: [
                                     { id: 'osr_j1', text: 'Vá até o Armário 1 e pegue o gabarito de jateamento do freio.' },
@@ -445,8 +425,6 @@
                                     { id: 'osr_confirm', text: 'Confirmo o envio das peças jateadas e a correta emissão da OSR para Pintura.', highlight: 'info' }
                                 ]}
                             ];
-
-                            // ETAPA 5: FECHAMENTO (MÓDULO CUSTOMIZADO)
                             stepsData[5] = [
                                 { id: 'insp_fechamento', title: 'Fechamento da Capa do FRC', items: [
                                     { id: 'close_ui', type: 'fechamento_ui' },
@@ -456,7 +434,6 @@
                                     { id: 'close_confirm', text: 'Auditoria técnica concluída e validada.', highlight: 'alert' }
                                 ]}
                             ];
-
                         } else {
                             stepsData[0] = [{ id: 'insp_na', title: 'Procedimento Indisponível', items: [
                                 { id: 'insp_na1', text: 'Atenção: A inspeção guiada está configurada apenas para o 4º Ciclo (Overhaul).', highlight: 'alert' }
@@ -506,9 +483,9 @@
                     </div>
                 </div>
 
-                <button @click="startApp()" :disabled="!model || !cycle" :class="(model && cycle) ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-300 cursor-not-allowed'" class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95">
-                    Avançar 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <button @click="startApp()" :disabled="!model || !cycle || isLoadingDb" :class="(model && cycle && !isLoadingDb) ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-300 cursor-not-allowed'" class="w-full py-4 mt-8 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95">
+                    <span x-text="isLoadingDb ? 'Sincronizando Banco...' : 'Avançar'"></span>
+                    <svg x-show="!isLoadingDb" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
             </div>
         </div>
@@ -572,6 +549,7 @@
             <button @click="activeTab = 'caixas'; selectedContainer = null; selectedSub = null" :class="activeTab === 'caixas' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Caixas</button>
             <button @click="activeTab = 'carros'; selectedContainer = null; selectedSub = null" :class="activeTab === 'carros' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Carros</button>
             <button @click="activeTab = 'armarios'; selectedContainer = null; selectedSub = null" :class="activeTab === 'armarios' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Armários</button>
+            <button @click="activeTab = 'frotas'; selectedContainer = null; selectedSub = null" :class="activeTab === 'frotas' ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600'" class="px-3 py-2 rounded-lg flex-shrink-0 transition-colors">Frotas</button>
         </div>
 
         <div x-show="searchQuery === '' && activeTab !== 'all'" class="p-4 space-y-2">
@@ -592,14 +570,20 @@
 
         <div class="flex-1 p-4 pb-8 overflow-y-auto space-y-4">
             <template x-for="tool in filteredTools" :key="tool.code + tool.loc + tool.sub">
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
                     <div class="h-32 bg-gray-100 flex items-center justify-center p-2 border-b border-gray-100 relative">
                         <img :src="tool.image && tool.image !== 'COLE_O_LINK_DO_IMGUR_AQUI' ? tool.image : 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=400'" alt="Tool" class="max-h-full object-contain mix-blend-multiply opacity-80">
+                        <template x-if="tool.special">
+                            <span class="absolute top-2 right-2 bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest shadow-sm">Especial</span>
+                        </template>
                     </div>
                     <div class="p-4">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" x-text="tool.name"></p>
                         <h3 class="text-lg font-black text-blue-900" x-text="tool.code"></h3>
-                        <p class="text-xs font-medium text-gray-600 mt-2"><span class="font-bold text-gray-900" x-text="tool.loc"></span> &bull; <span x-text="tool.sub"></span></p>
+                        <p class="text-xs font-medium text-gray-600 mt-2 flex items-center gap-1.5">
+                            <svg class="text-orange-600" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span class="font-bold text-gray-900" x-text="tool.loc"></span> &bull; <span x-text="tool.sub"></span>
+                        </p>
                     </div>
                 </div>
             </template>
@@ -700,9 +684,19 @@
                                 <p :class="checked[item.id] ? 'text-gray-500 line-through' : 'text-gray-800 font-semibold'" class="text-sm leading-snug">
                                     <span x-text="item.text"></span>
                                 </p>
+                                
                                 <div class="flex flex-wrap items-center gap-2 mt-1">
                                     <template x-if="item.reference">
-                                        <button @click="openModalImage(item.reference)" class="flex-1 inline-flex justify-center px-3 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold uppercase transition-colors">Ver Ref.</button>
+                                        <div class="flex gap-2 w-full mt-1">
+                                            <button @click="openModalImage(item.reference)" class="flex-1 inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
+                                                <svg style="width: 14px; height: 14px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                <span x-text="item.reference.btnText || 'Ver Referência'"></span>
+                                            </button>
+                                            
+                                            <button @click="openLocationModalByCode(item.reference.toolCode)" class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg border border-orange-200 hover:bg-orange-200 transition transform active:scale-95 shadow-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                            </button>
+                                        </div>
                                     </template>
                                 </div>
                             </div>
@@ -834,11 +828,29 @@
     <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.8);" @click.self="closeModalImage()">
         <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl flex flex-col" style="max-height: 85vh;">
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center">
-                <span class="font-extrabold text-xs uppercase text-gray-300">Apoio Visual / Tool</span>
-                <button @click="closeModalImage()" class="p-1 text-gray-400 hover:text-white rounded-full bg-gray-800 transition">X</button>
+                <div class="flex items-center gap-2">
+                    <span class="font-extrabold text-xs uppercase text-gray-300">Apoio Visual / Tool</span>
+                </div>
+                <button @click="closeModalImage()" class="p-1 text-gray-400 hover:text-white rounded-full bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 bg-gray-100 flex items-center justify-center">
-                <img :src="modalData.imgUrl" class="max-w-full rounded-xl shadow-md border border-gray-200 bg-white" alt="Ref">
+            
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-100 flex items-center justify-center relative">
+                <img :src="modalData.imgUrl" class="max-w-full rounded-xl shadow-md border border-gray-200 bg-white" alt="Referência">
+                <div class="absolute bottom-6 bg-gray-900/90 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full shadow-lg border border-gray-700 backdrop-blur-sm" x-text="modalData.location"></div>
+            </div>
+            
+            <div class="bg-white p-4 border-t border-gray-200 space-y-2">
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 w-full flex justify-between items-center">
+                    <div>
+                        <p class="text-blue-500 font-bold uppercase tracking-wider mb-0.5" style="font-size: 9px;">Ferramenta / P/N</p>
+                        <p class="text-blue-900 font-black" x-text="modalData.toolCode"></p>
+                    </div>
+                </div>
+                <button @click="closeModalImage()" class="w-full py-3 mt-3 bg-blue-900 text-white font-bold text-sm rounded-xl hover:bg-blue-800 shadow-sm">
+                    Fechar Referência
+                </button>
             </div>
         </div>
     </div>
