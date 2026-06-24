@@ -59,7 +59,7 @@
                         this.parsePlanilha(csvText);
                     } catch (erro) {
                         console.error("Erro ao sincronizar BD:", erro);
-                        alert("Aviso: Falha ao baixar o acervo de ferramentas. Verifique a internet.");
+                        alert("Aviso: Falha ao baixar o acervo de ferramentas. O app funcionará com imagens padrão.");
                     } finally {
                         this.isLoadingDb = false;
                     }
@@ -151,7 +151,7 @@
                 },
                 closeModalImage() { this.modalOpen = false; },
 
-                // --- ROTEAMENTO ---
+                // --- ROTEAMENTO E CONTROLES ---
                 get currentStepNames() {
                     if (this.process === 'inspecao') return ['Limpeza NDT', 'Metrologia', 'Auditoria NDT', 'Red Tag', 'Pintura & OSR', 'Fechamento'];
                     return ['Preparação', 'Desmontagem', 'Documentação', 'Despacho'];
@@ -291,82 +291,126 @@
                     let stepsData = [];
 
                     // ==========================================
-                    // TRILHA 1: DESMONTAGEM (INTACTA)
+                    // TRILHA 1: DESMONTAGEM (RESTAURADA INTACTA)
                     // ==========================================
                     if (this.process === 'desmontagem') {
+                        // --- ETAPA 0: PREPARAÇÃO ---
                         stepsData[0] = [
-                            { id: 'prep_mod', title: 'Preparação de Sistema', items: [
-                                { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
-                                { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
-                            ]}
+                            {
+                                id: 'prep_mod',
+                                title: 'Preparação de Sistema',
+                                items: [
+                                    { id: 'prep_1', text: 'Iniciar a OS no sistema Mysys e imprimir a capa.' },
+                                    { id: 'prep_2', text: 'Atualizar Planilha de Movimentação para o status "Bancada 1".' }
+                                ]
+                            }
                         ];
 
+                        // --- ETAPA 1: DESMONTAGEM ---
                         let drenagemItems = [];
                         if (isB777) {
-                            drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável.', highlight: 'alert' });
+                            drenagemItems.push({ id: 'dren_b1', text: 'AVISO: Usar proteção (pele e olhos). O fluido hidráulico é inflamável e perigoso.', highlight: 'alert' });
                             drenagemItems.push({ id: 'dren_b2', text: 'Desapertar e remover o parafuso (1-350) e a anilha de sangria (1-360).' });
-                            let drenoRef = isOverhaul ? { btnText: 'Ref. Conexão', toolCode: 'Conexão Hidráulica B777' } : null;
-                            drenagemItems.push({ id: 'dren_b3', text: 'Conectar a mangueira de dreno (ponta fina) e abaixar as canelas dos 6 pistões.', highlight: 'info', reference: drenoRef });
-                            drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380).', highlight: 'alert' });
+                            let drenoRef = isOverhaul ? { btnText: 'Ref. Conexão', imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg', manualPage: 'CMM Ref (Verificar CMM)', toolCode: 'Conexão Hidráulica B777' } : null;
+                            drenagemItems.push({ id: 'dren_b3', text: 'Conectar a mangueira de dreno (ponta fina) e abaixar as canelas dos 6 pistões. Dica: Girar no sentido horário e bater levemente na lateral.', highlight: 'info', reference: drenoRef });
+                            drenagemItems.push({ id: 'dren_b4', text: 'Após drenar, apertar o parafuso de sangria (1-380) com torque de 6,8 N.m (60.19 lbf.in).', highlight: 'alert' });
                         } else {
-                            drenagemItems.push({ id: 'dren_a1', text: 'AVISO: Usar equipamento de proteção (EPI) para pele e olhos. O fluido hidráulico é inflamável.', highlight: 'alert' });
-                            drenagemItems.push({ id: 'dren_a2', text: 'Conectar a mangueira de dreno na conexão/válvula de sangria.' });
-                            drenagemItems.push({ id: 'dren_a3', text: 'Empurrar ("apertar") os pistões para baixo forçando a descida e esvaziamento.' });
-                            drenagemItems.push({ id: 'dren_a4', text: 'DICA: Trocar a válvula para drenar os 7 pistões do conjunto oposto.', highlight: 'info' });
+                            drenagemItems.push({ id: 'dren_a1', text: 'AVISO: Usar equipamento de proteção (EPI) para pele e olhos. O fluido hidráulico é inflamável e altamente irritante.', highlight: 'alert' });
+                            drenagemItems.push({ id: 'dren_a2', text: 'Conectar a mangueira de dreno na conexão/válvula de sangria e direcionar a outra ponta para o recipiente de contenção adequado.' });
+                            drenagemItems.push({ id: 'dren_a3', text: 'Empurrar ("apertar") os pistões para baixo. Essa ação força a descida do pistão, esvaziando o fluido de dentro do Piston House para a mangueira.' });
+                            drenagemItems.push({ id: 'dren_a4', text: 'DICA TÉCNICA (Circuito Dividido): Cada conexão de dreno está ligada a uma galeria de apenas 7 pistões. Após esvaziar um lado, é obrigatório trocar a válvula para drenar os 7 pistões do conjunto oposto.', highlight: 'info' });
+                            drenagemItems.push({ id: 'dren_a5', text: 'DICA OPERACIONAL: Caso algum pistão esteja travado ou apresente resistência na operação, gire-o levemente no sentido horário enquanto aplica a força de compressão.', highlight: 'info' });
                         }
 
                         let torqueTubeItems = [];
                         if (isB777) {
-                            if (isOverhaul) torqueTubeItems.push({ id: 'tt_b1', text: 'OVERHAUL: Encaminhar unido. Verificar pág 5000 para envio ao NDT.', highlight: 'info' });
-                            else torqueTubeItems.push({ id: 'tt_b2', text: 'Nenhuma ação de desmontagem requerida.' });
+                            if (isOverhaul) {
+                                torqueTubeItems.push({ id: 'tt_b1', text: 'OVERHAUL (4º Ciclo): Não há intervenção de desmontagem no Torque Tube. Encaminhar unido. Verificar pág 5000 para envio ao NDT.', highlight: 'info' });
+                            } else {
+                                torqueTubeItems.push({ id: 'tt_b2', text: 'Torque Tube: Nenhuma ação de desmontagem requerida nesta ordem de serviço.' });
+                            }
                         } else {
-                            torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Separar SOMENTE o Piston House para abrir.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House alinhados na horizontal.', highlight: 'info' });
-                            torqueTubeItems.push({ id: 'desm_2', text: 'Usar Soquete 5/16" com extensor longo e catraca para fixação principal.' });
-                            torqueTubeItems.push({ id: 'desm_3', text: 'Usar Parafusadeira pneumática para remover os 3 parafusos maiores.' });
-                            if (isOverhaul) torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL: Levar Torque Tube à prensa hidráulica para a remoção dos pinos.', highlight: 'alert' });
+                            torqueTubeItems.push({ id: 'desm_1', text: isA321 ? 'Atenção A321: Separar e fixar na bancada SOMENTE o Piston House para abrir.' : 'Atenção A320/NEO: Posicionar Torque Tube e Piston House alinhados na horizontal.', highlight: 'info' });
+                            torqueTubeItems.push({ id: 'desm_2', text: 'Ferramenta: Usar Soquete 5/16" com extensor longo e catraca para fixação principal. (Segurar o parafuso por baixo).' });
+                            torqueTubeItems.push({ id: 'desm_3', text: 'Ferramenta: Usar Parafusadeira pneumática para remover os 3 parafusos maiores da carcaça.' });
+                            if (isOverhaul) {
+                                torqueTubeItems.push({ id: 'desm_8', text: 'OVERHAUL (4º Ciclo): Levar Torque Tube à prensa hidráulica para a remoção segura dos pinos.', highlight: 'alert' });
+                            }
                         }
 
                         let pistonHouseItems = [];
                         if (isB777) {
-                            pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO: Não empurrar os pistões para dentro das camisas enquanto instalados.', highlight: 'alert' });
-                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_b_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico.', highlight: 'info', reference: { btnText: 'Ref. Conexão B777', toolCode: 'Conexão Hidráulica B777' } });
-                            pistonHouseItems.push({ id: 'ph_b_insulator', text: 'Remover o "insulator assembly" usando a ferramenta F27701000.', reference: { btnText: 'Ref. Tool F27701000', manualPage: 'Page 3009', toolCode: 'F27701000-T' } });
-                            pistonHouseItems.push({ id: 'ph_b_sleeve', text: 'Desrosquear as canecas utilizando a ferramenta R47166.', reference: { btnText: 'Ref. Tool R47166', manualPage: 'Page 3009', toolCode: 'R47166' } });
-                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa.', highlight: 'alert' });
-                            pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE: Descartar TODOS os anéis de vedação no lixo.', highlight: 'alert' });
-                            pistonHouseItems.push({ id: 'ph_b_spring', text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163.', highlight: 'info', reference: { btnText: 'Ref. Ferramentas', manualPage: 'Page 3010', toolCode: 'R47163' } });
-                        } else {
-                            if (isOverhaul) pistonHouseItems.push({ id: 'ph_a32x_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico.', highlight: 'info', reference: { btnText: 'Ref. Conexão A32X', toolCode: 'Conexão Hidráulica A32X' } });
-                            pistonHouseItems.push({ id: 'desm_4', text: 'Usar Soquete 1/4" para soltar com cuidado os parafusos de retenção do tubinho.' });
-                            pistonHouseItems.push({ id: 'desm_sleeve_a32x', text: 'Desrosquear e remover as canecas utilizando a ferramenta especial Adaptador (Q47963).', highlight: 'info', reference: { btnText: 'Ref. Ferramenta (Q47963)', manualPage: 'CMM Page 3010', toolCode: 'Q47963-T' } });
-                            pistonHouseItems.push({ id: 'desm_pistao_a32x', text: 'Remover o pistão. Cortar e descartar a vedação externa.', highlight: 'info' });
-                            if (isA321) {
-                                pistonHouseItems.push({ id: 'desm_5', text: 'Peça 160 (Bushing) e Peça 170 (Trava): SALVAR AMBAS no saco plástico.', highlight: 'info' });
-                                pistonHouseItems.push({ id: 'desm_6', text: 'Peça 180 (Vedação menor): Cortar e DESCARTAR.', highlight: 'alert' });
+                            pistonHouseItems.push({ id: 'ph_b_aviso', text: 'AVISO DE SEGURANÇA: Não empurrar os pistões (1-240) para dentro das camisas enquanto instalados, pode causar espirro de fluido hidráulico.', highlight: 'alert' });
+                            if (isOverhaul) {
+                                pistonHouseItems.push({ id: 'ph_b_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting) para drenagem completa e inspeção.', highlight: 'info', reference: { btnText: 'Ref. Conexão B777', imgUrl: 'https://i.imgur.com/oXx3aU6.jpeg', manualPage: 'CMM Ref (Verificar CMM)', toolCode: 'Conexão Hidráulica B777' } });
                             }
-                            if (isA320) pistonHouseItems.push({ id: 'desm_7', text: 'Item 230: Remover e DESCARTAR.', highlight: 'alert' });
-                            pistonHouseItems.push({ id: 'desm_vedacoes', text: descartaVedacoesA32X ? 'VEDAÇÕES: Cortar e DESCARTAR no lixo.' : 'VEDAÇÕES: PRESERVAR. Acomodar no saquinho.', highlight: descartaVedacoesA32X ? 'alert' : 'info' });
+                            pistonHouseItems.push({ id: 'ph_b_insulator', text: 'Remover o "insulator assembly" (1-100) de cada pistão usando a ferramenta F27701000. CUIDADO: Não usar ferramentas afiadas.', reference: { btnText: 'Ref. Tool F27701000', imgUrl: 'https://i.imgur.com/reDKB9A.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'Tool F27701000' } });
+                            pistonHouseItems.push({ id: 'ph_b_sleeve', text: 'Desrosquear e remover as canecas (Return Piston Assemblies 1-090) utilizando a ferramenta especial R47166.', reference: { btnText: 'Ref. Tool R47166', imgUrl: 'https://i.imgur.com/w9Fjg8u.jpeg', manualPage: 'Page 3009 / CMM 32-49-60', toolCode: 'Tool R47166' } });
+                            if (isOverhaul) {
+                                pistonHouseItems.push({ id: 'ph_b_ovh', text: 'OVERHAUL: Efetuar a desmontagem completa do alojamento. Alerta crítico: Remover todas as conexões e preservar a placa de identificação.', highlight: 'alert' });
+                            }
+                            pistonHouseItems.push({ id: 'ph_b_descarte', text: 'POLÍTICA DE DESCARTE (Poka-Yoke): Descartar permanentemente TODOS os anéis de vedação e partes internas do pistão no lixo em qualquer ciclo (1º ao 4º).', highlight: 'alert' });
+                            pistonHouseItems.push({ id: 'ph_b_spring', text: 'Levar o pistão à prensa. Utilizar a ferramenta R47163 sobre o guia da mola para comprimir a mola (1-200) até acessar o "second groove" do pistão. Em seguida, remover o retaining ring (1-170) com o alicate adequado (Q46498).', highlight: 'info', reference: { btnText: 'Ref. Ferramentas', imgUrl: 'https://i.imgur.com/n85AF4P.jpeg', manualPage: 'Page 3010 / CMM 32-49-60', toolCode: 'Tool R47163 / Q46498' } });
+                        } else {
+                            if (isOverhaul) {
+                                pistonHouseItems.push({ id: 'ph_a32x_conexao', text: 'OVERHAUL: Remover a conexão de entrada do fluido hidráulico (Hydraulic Port / Fitting). (Aguardando imagem específica do modelo).', highlight: 'info', reference: { btnText: 'Ref. Conexão A32X', imgUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400', manualPage: 'CMM Ref (Aguardando)', toolCode: 'Conexão Hidráulica A32X' } });
+                            }
+                            pistonHouseItems.push({ id: 'desm_4', text: 'Ferramenta: Usar Soquete de bitola 1/4" para soltar com cuidado os parafusos de retenção do tubinho do pistão.' });
+                            pistonHouseItems.push({ id: 'desm_sleeve_a32x', text: 'Desrosquear e remover as canecas (Piston Sleeves 1-080 ou 2-110) utilizando a ferramenta especial Adaptador (Q47963).', highlight: 'info', reference: { btnText: 'Ref. Ferramenta (Q47963)', imgUrl: 'https://i.imgur.com/UOUvSSN.jpeg', manualPage: 'CMM Page 3010 / Fig 2', toolCode: 'Adaptador Q47963' }, reference2: { btnText: 'Ref. Piston Sleeve', imgUrl: 'https://i.imgur.com/EWLk3BW.jpeg', manualPage: 'CMM Fig 2, Item 110', toolCode: 'Piston Sleeve (2-110)' } });
+                            pistonHouseItems.push({ id: 'desm_pistao_a32x', text: 'Remover o pistão. Cortar e descartar a vedação externa conforme regra de ciclo.', highlight: 'info', reference: { btnText: 'Ref. Vedação', imgUrl: 'https://i.imgur.com/mvo5WSk.jpeg', manualPage: 'CMM Ref', toolCode: 'Vedação Externa Pistão' } });
+                            if (isA321) {
+                                pistonHouseItems.push({ id: 'desm_5', text: 'Peça 160 (Bushing) e Peça 170 (Trava): SALVAR AMBAS. Colocar juntas no saco plástico para acompanhar a PASTA.', highlight: 'info' });
+                                pistonHouseItems.push({ id: 'desm_6', text: 'Peça 180 (Vedação menor): Cortar e DESCARTAR na lixeira de resíduos contaminados.', highlight: 'alert' });
+                            }
+                            if (isA320) {
+                                pistonHouseItems.push({ id: 'desm_7', text: 'Item 230 (Seal Assembly - Pág 10046): Remover e DESCARTAR obrigatoriamente no lixo (Lembrete: Itens 160/170 não constam nesta carcaça).', highlight: 'alert' });
+                            }
+                            pistonHouseItems.push({ id: 'desm_vedacoes', text: descartaVedacoesA32X ? 'VEDAÇÕES GRANDES (Caneca/Pistão): Cortar com estilete e DESCARTAR no lixo de descarte.' : 'VEDAÇÕES GRANDES (Caneca/Pistão): PRESERVAR. Acomodar no saquinho, grampear a fita verde e anexar à pasta física.', highlight: descartaVedacoesA32X ? 'alert' : 'info' });
                         }
 
                         stepsData[1] = [
-                            { id: 'mod_drenagem', title: isB777 ? 'Drenar Óleo' : 'Drenar Fluido Hidráulico', items: drenagemItems },
+                            { id: 'mod_drenagem', title: isB777 ? 'Drenar Óleo (6 Pistões)' : 'Drenar Fluido Hidráulico', items: drenagemItems },
                             { id: 'mod_torque', title: 'Torque Tube', items: torqueTubeItems },
                             { id: 'mod_piston', title: 'Piston House', items: pistonHouseItems }
                         ];
 
+                        // --- ETAPA 2: DOCUMENTAÇÃO ---
+                        let reqInstructionText = isOverhaul ? 'Perform the cleaning IAW-IT-CPQ-004 And remove painting IAW-IT-CPQ-007' : 'Perform the cleaning IAW-IT-CPQ-004';
+                        let restoreRemarksText = 'This component was disassembled IAW page 3001 to 3012';
+
                         stepsData[2] = [
-                            { id: 'doc_mod', title: 'Formulários e Fitas', items: [
-                                { id: 'doc_1', text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE e S/N.' },
-                                { id: 'doc_2', text: 'Repair Request: Preencher "QSCMY63 - Oficina Limpeza Técnica".' },
-                                { id: 'doc_7', text: 'Fechamento de Laudo: Aplicar carimbo da LATAM, data e rubrica.' },
-                                { id: 'doc_8', text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal.', highlight: 'alert' }
-                            ]}
+                            {
+                                id: 'doc_mod',
+                                title: 'Formulários e Fitas',
+                                items: [
+                                    { id: 'doc_1', text: 'Repair Request: Fixar fita adesiva verde contendo o BARCODE legível e o S/N no invólucro plástico protetor.', reference: { btnText: 'Ref. Capa (Fita Verde)', imgUrl: 'https://i.imgur.com/mrgzFdp.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Capa)' } },
+                                    { id: 'doc_2', text: 'Repair Request (Campo Oficina): Preencher com "QSCMY63 - Oficina Limpeza Técnica".', reference: { btnText: 'Ref. Campo Oficina', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
+                                    { id: 'doc_3', text: `Repair Request (Instrução Operacional): Escrever: "${reqInstructionText}".`, reference: { btnText: 'Ref. Instrução', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
+                                    { id: 'doc_4', text: 'Repair Request (Plaqueta de Identificação): Registrar a frase padrão: "Identification Plate: IN".', reference: { btnText: 'Ref. Plaqueta', imgUrl: 'https://i.imgur.com/X6gvu78.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Repair Request (Infos)' } },
+                                    { id: 'doc_5', text: `Component Restoration Form (Histórico): Informar com precisão o NUMBER of cycles (${this.cycle}).`, reference: { btnText: 'Ref. Ciclos', imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Component Restoration Form' } },
+                                    { id: 'doc_6', text: `Component Restoration Form (Remarks): Adicionar: "${restoreRemarksText}".`, reference: { btnText: 'Ref. Remarks', imgUrl: 'https://i.imgur.com/7I1oMwT.jpeg', manualPage: 'Procedimento Interno', toolCode: 'Component Restoration Form' } },
+                                    { id: 'doc_7', text: 'Fechamento de Laudo: Aplicar carimbo (LATAM-6022470 Wellington), preencher data corrente e lançar rubrica.' },
+                                    { id: 'doc_8', text: 'DESPACHO FORMAL: Colher a assinatura física ou validação no terminal do responsável escalado para o despacho.', highlight: 'alert', reference: { btnText: 'Ref. Despacho', imgUrl: 'https://i.imgur.com/aCO7tyg.jpeg', manualPage: 'Sistema Mysys / Terminal', toolCode: 'Validação Final' } }
+                                ]
+                            }
                         ];
 
+                        // --- ETAPA 3: DESPACHO ---
                         let despachoItems = [];
-                        if (isB777) despachoItems.push({ id: 'fin_1_b', text: 'FLUXO MATERIAL: Movimentar os conjuntos laváveis para Limpeza Técnica 2.' });
-                        else despachoItems.push({ id: 'fin_1', text: isA321 ? 'FLUXO MATERIAL A321: Enviar apenas Piston House + Repair Request.' : 'FLUXO A320: Enviar conjunto completo para Limpeza.' });
-                        despachoItems.push({ id: 'fin_4', text: 'BAIXA OPERACIONAL: Realizar a baixa técnica definitiva no Mysys.' });
+                        if (isB777) {
+                            despachoItems.push({ id: 'fin_1_b', text: 'FLUXO MATERIAL: Movimentar os conjuntos laváveis protegidos com o Repair Request para a área da Limpeza Técnica 2.' });
+                            despachoItems.push({ id: 'fin_2_b', text: 'LOGÍSTICA INTERNA DA PASTA: Arquivar a documentação técnica no ARMÁRIO PADRÃO da oficina de freios.', highlight: 'info' });
+                        } else {
+                            despachoItems.push({ id: 'fin_1', text: isA321 ? 'FLUXO MATERIAL A321: Enviar para lavagem apenas o Piston House + Repair Request.' : 'FLUXO MATERIAL A320: Enviar o conjunto completo (Torque Tube + Piston House) com a guia Repair Request para a Limpeza Técnica 2.' });
+                            
+                            let textoLogisticaA320 = descartaVedacoesA32X 
+                                ? 'LOGÍSTICA DA PASTA A320: Guardar a pasta física contendo os laudos no ARMÁRIO PADRÃO.' 
+                                : 'LOGÍSTICA DA PASTA A320: Guardar a pasta física contendo os laudos e o lote de vedações no ARMÁRIO PADRÃO.';
+                                
+                            despachoItems.push({ id: 'fin_2', text: isA321 ? 'LOGÍSTICA DA PASTA A321: Guardar a pasta (Assegurar as peças 160/170 no saquinho) no ARMÁRIO DE AGUARDO DE REPARO.' : textoLogisticaA320, highlight: isA321 ? 'alert' : 'info' });
+                        }
+                        despachoItems.push({ id: 'fin_3', text: 'LANÇAMENTO SISTÊMICO: Atualizar a Planilha de Movimentação Logística para o status de "Limpeza Técnica 2".' });
+                        despachoItems.push({ id: 'fin_4', text: 'BAIXA OPERACIONAL: Realizar a baixa técnica definitiva e encerramento da Ordem de Serviço (OS) dentro do Mysys.' });
 
                         stepsData[3] = [{ id: 'fin_mod', title: 'Destinos e Sistema', items: despachoItems }];
 
@@ -377,34 +421,34 @@
                         if (isOverhaul) {
                             stepsData[0] = [
                                 { id: 'insp_clean', title: 'Descontaminação Crítica', items: [
-                                    { id: 'insp_c1', text: 'Banho Químico: Imergir Piston Housing, Torque Tube, Retaining Plate, Rear Plate, pinos e parafusos no fluido.' },
+                                    { id: 'insp_c1', text: 'Banho Químico: Imergir Piston Housing, Torque Tube, Retaining Plate, Rear Plate, pinos e parafusos no fluido para remover resíduos do NDT.' },
                                     { id: 'insp_c2', text: 'Ação Mecânica: Solicitar o jato de limpeza, desobstruindo roscas e cavidades cegas.' },
-                                    { id: 'insp_c3', text: 'SECAGEM (POKA-YOKE): Aplicar ar comprimido IMEDIATAMENTE no Torque Tube e peças escuras.', highlight: 'alert' }
+                                    { id: 'insp_c3', text: 'SECAGEM (POKA-YOKE): Aplicar ar comprimido IMEDIATAMENTE no Torque Tube e peças de aço de liga. Prioridade absoluta para bloquear risco de oxidação.', highlight: 'alert' }
                                 ]}
                             ];
                             stepsData[1] = [
                                 { id: 'insp_dim_piston', title: 'Piston Housing (2-380)', items: [
                                     { id: 'insp_d1', text: 'Ferramenta: Imicro 50-63mm.', highlight: 'info' },
                                     { id: 'insp_d2', text: 'Tolerância Máxima permitida: 50,846 mm.', highlight: 'alert' },
-                                    { id: 'insp_d3', text: 'Medir as 14 cavidades (furos das canecas) e anotar os valores exatos na Pág 9 do FRC.' }
+                                    { id: 'insp_d3', text: 'Medir as 14 cavidades (furos das canecas) e anotar os valores exatos nas colunas 1 a 14 da seção "Measured value" na Pág 9 do FRC.' }
                                 ]},
                                 { id: 'insp_dim_torque', title: 'Torque Tube (1-310)', items: [
                                     { id: 'insp_d4', text: 'Ferramenta: Micrômetro interno apropriado.', highlight: 'info' },
                                     { id: 'insp_d5', text: 'Tolerância exigida: 22,00 a 22,021 mm.', highlight: 'alert' },
-                                    { id: 'insp_d6', text: 'Medir os 9 furos de alojamento dos pinos e anotar os valores na Pág 9.' }
+                                    { id: 'insp_d6', text: 'Medir os 9 furos de alojamento dos pinos e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' }
                                 ]},
                                 { id: 'insp_dim_pinos', title: 'Pinos (1-370)', items: [
                                     { id: 'insp_d7', text: 'Ferramenta: Micrômetro externo de precisão.', highlight: 'info' },
                                     { id: 'insp_d8', text: 'Tolerância exigida: 22,041 a 22,054 mm.', highlight: 'alert' },
-                                    { id: 'insp_d9', text: 'Medir os 9 pinos de torque e anotar os valores na Pág 9.' }
+                                    { id: 'insp_d9', text: 'Medir os 9 pinos de torque e anotar os valores exatos nas colunas 1 a 9 da Pág 9.' }
                                 ]}
                             ];
                             stepsData[2] = [
                                 { id: 'insp_ndt', title: 'Auditoria de Laudos', items: [
                                     { id: 'insp_n1', text: 'Posicionar o Laudo NDT lado a lado com as Páginas 3 e 6 do formulário FRC.' },
-                                    { id: 'insp_n2', text: 'Marcar com "X" a coluna "Approved? Yes/No" no FRC baseado no "Result" do NDT.' },
-                                    { id: 'insp_n3', text: 'CHANCELA OFICIAL: Aplicar no campo "Performed by" o Carimbo LATAM, Data e Rubrica.', highlight: 'alert' },
-                                    { id: 'insp_n4', text: 'Atenção: Assine ESTRITAMENTE as linhas referentes à validação do NDT.', highlight: 'info' }
+                                    { id: 'insp_n2', text: 'Localizar cada peça pelo P/N no NDT. Se o "Result" constar "A" (Approved) ou "R" (Rejected), marque com "X" a respectiva coluna "Approved? Yes/No" no FRC.' },
+                                    { id: 'insp_n3', text: 'CHANCELA OFICIAL: Imediatamente após assinalar, aplique no campo "Performed by" o Carimbo LATAM, a Data corrente e a Rubrica.', highlight: 'alert' },
+                                    { id: 'insp_n4', text: 'Atenção: Assine ESTRITAMENTE as linhas referentes à validação do NDT. Não sobrescreva as inspeções visuais realizadas por outros inspetores.', highlight: 'info' }
                                 ]}
                             ];
                             stepsData[3] = [
@@ -845,7 +889,7 @@
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 w-full flex justify-between items-center">
                     <div>
                         <p class="text-blue-500 font-bold uppercase tracking-wider mb-0.5" style="font-size: 9px;">Ferramenta / P/N</p>
-                        <p class="text-blue-900 font-black" x-text="modalData.toolCode"></p>
+                        <p class="text-blue-900 font-black" x-text="modalData.toolCode || 'Não especificada'"></p>
                     </div>
                 </div>
                 <button @click="closeModalImage()" class="w-full py-3 mt-3 bg-blue-900 text-white font-bold text-sm rounded-xl hover:bg-blue-800 shadow-sm">
